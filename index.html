@@ -49,11 +49,11 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     <div class="ac-panel max-w-lg w-full p-6 md:p-8 text-center relative">
         <div class="flex justify-between items-center mb-1">
             <span id="save-status-welcome" class="text-xs font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-400">💾 支援自動儲存進度</span>
-            <button type="button" onclick="toggleUILang()" id="welcome-lang-btn" class="ac-btn bg-indigo-600 text-white font-bold text-xs px-3 py-1 rounded-full">🌐 English UI</button>
+            <button type="button" onclick="toggleUILang()" id="welcome-lang-btn" class="ac-btn bg-indigo-600 text-white font-bold text-xs px-3 py-1 rounded-full">🌐 切换：简中 / EN</button>
         </div>
         <div id="ui-welcome-badge" class="inline-block bg-amber-400 text-amber-950 font-black px-4 py-1 rounded-full text-sm mb-2 shadow">🏝️ 第二冊 14座小島跳島大冒險</div>
         <h1 id="ui-welcome-title" class="text-3xl md:text-4xl font-black text-amber-900 mb-2">學華語大冒險</h1>
-        <p id="ui-welcome-desc" class="text-amber-800 text-xs md:text-sm mb-4">從南端「溫馨小屋島」出發，跨越木橋探索 12 座課程島，前往最北端「榮耀金盃島」（共 14 座島）！登島後：📘先找主角讀課文（支援語音跟讀計分） ➔ 1️⃣回答問題 ➔ 2️⃣收服「🧚 生詞小精靈」 ➔ 3️⃣揮動「🖌️ 神來之筆」過關換新衣！</p>
+        <p id="ui-welcome-desc" class="text-amber-800 text-xs md:text-sm mb-4">從南端「溫馨小屋島」出發，跨越木橋探索 12 座課程島，前往最北端「榮耀金盃島」（共 14 座島）！登島後：📘先找主角讀課文（支援語音跟讀計分） ➔ 1️⃣回答問題 ➔ 2️⃣收服「🧚 生詞小精靈」 ➔ 3️⃣句型寶箱 ➔ 4️⃣揮動「🖌️ 神來之筆」過關換新衣！</p>
         <div class="mb-4 text-left">
             <label id="ui-name-label" class="block text-amber-900 font-bold mb-1 text-sm">👤 請輸入你的冒險家名字：</label>
             <input id="player-name-input" type="text" value="小華" maxlength="12" class="w-full px-4 py-2 rounded-xl border-2 border-amber-400 bg-white font-bold text-amber-950 focus:outline-none focus:border-amber-600 text-center text-lg">
@@ -74,7 +74,7 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
                 <button type="button" onclick="window.selectAvatar(3)" id="avatar-btn-3" class="avatar-opt p-2 rounded-xl border-2 border-gray-200 bg-white flex flex-col items-center cursor-pointer"><span class="w-6 h-6 rounded-full bg-yellow-500 border border-white shadow"></span><span id="ui-col-3" class="text-xs font-bold text-amber-900 mt-1">向日葵</span></button>
             </div>
         </div>
-<div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2">
             <button type="button" onclick="window.startGame()" id="ui-start-btn" class="ac-btn w-full py-3.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black text-xl rounded-2xl border-2 border-emerald-700">⛵ 揚帆展開學華語大冒險！</button>
             <button type="button" onclick="window.resetGameProgress()" id="ui-reset-btn" class="text-xs font-bold text-rose-700 hover:underline mt-1">🗑️ 清除儲存紀錄並重新開始</button>
         </div>
@@ -84,8 +84,9 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     </div>
 </div>
 
-<!-- Top HUD (精簡清爽版：將設定收納至右上角 ⚙️ 設定選單) -->
+<!-- Top HUD (只保留左上玩家狀態 與 右上功能鍵，平板不擠壓) -->
 <div class="fixed top-2 left-2 right-2 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+    <!-- 左上：玩家資訊 -->
     <div class="ac-panel px-3 py-1.5 flex items-center gap-2.5 pointer-events-auto">
         <div class="flex items-center gap-1.5">
             <span class="bg-amber-500 text-white font-black px-2 py-0.5 rounded-lg text-xs" id="hud-level">Lv.1</span>
@@ -106,30 +107,49 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         <span id="hud-save-indicator" class="hidden sm:inline-block text-[11px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">💾 自動存檔</span>
     </div>
 
-    <div id="hud-stage-mission" class="ac-panel px-3 py-1.5 flex flex-wrap items-center gap-1.5 pointer-events-auto bg-amber-50/95 text-xs font-bold text-amber-900">
-        <span>🎯 <span id="ui-mission-prefix">本島順序</span> (<strong id="mission-lesson-title">第一課</strong>)：</span>
-        <span id="mission-read-status" class="px-2 py-0.5 rounded-full bg-rose-200 text-rose-900 ring-2 ring-rose-500 animate-pulse">📘 先找主角讀課文</span>
-        <span id="mission-quiz-status" class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">1️⃣❓ 問題 0/3</span>
-        <span id="mission-gem-status" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">2️⃣🧚 生詞 0/18</span>
-<span id="mission-chest-status" onclick="openSentencePuzzleModal(currentLesson ? currentLesson.id : gameState.unlockedMaxLesson)" class="px-2 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-400 cursor-pointer hover:bg-teal-200" title="點擊挑戰本課全部課文句子重組">3️⃣🧩 句型 0/5</span>
-        <span id="mission-write-status" class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">4️⃣🖌️ 鳥居生字 0/8</span>
-    </div>
-
-<div class="flex flex-wrap items-center gap-1.5 pointer-events-auto">
+    <!-- 右上：圖鑑、證書、全螢幕、設定 -->
+    <div class="flex flex-wrap items-center gap-1.5 pointer-events-auto">
         <button onclick="openVocabBook()" class="ac-btn bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-emerald-800 flex items-center gap-1.5">
             <span id="ui-btn-vocabbook">📖 圖鑑</span>
             <span class="bg-emerald-900 text-emerald-100 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
                 <span>💎<span id="vocab-count-badge">0/188</span></span><span>・</span><span>✍️<span id="writing-count-badge">0/110</span></span>
             </span>
         </button>
-        <button onclick="openCertificateModal()" class="ac-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-amber-700" title="查看學習歷程結業證書">📜 證書</button>
-        <button onclick="openSettingsModal()" class="ac-btn bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-slate-900">⚙️ 設定</button>
+        <button onclick="openCertificateModal()" id="ui-btn-cert" class="ac-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-amber-700" title="查看學習歷程結業證書">📜 證書</button>
+        <!-- ✨ 新增：全螢幕切換按鈕 -->
+        <button onclick="toggleFullScreen()" id="ui-btn-fullscreen" class="ac-btn bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-sky-800" title="切換全螢幕模式">⛶ 全螢幕</button>
+        <button onclick="openSettingsModal()" id="ui-btn-settings" class="ac-btn bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-slate-900">⚙️ 設定</button>
+    </div>
+</div>
+
+<!-- 🎯 新增：畫面左側直立式「本島任務進度條」（位於左上狀態列與左下方向鍵之間） -->
+<div id="hud-stage-mission" class="fixed left-2 top-16 z-20 ac-panel p-2 flex flex-col items-stretch gap-1.5 pointer-events-auto bg-amber-50/95 text-xs font-bold text-amber-900 w-36 md:w-40 shadow-xl">
+    <div class="text-[11px] font-black text-amber-950 bg-amber-300 px-2 py-1 rounded-lg border border-amber-600 text-center leading-tight">
+        🎯 <span id="ui-mission-prefix">本島順序</span><br>
+        <strong id="mission-lesson-title" class="text-xs text-rose-800">第一課</strong>
+    </div>
+    <span id="mission-read-status" class="px-2 py-1 rounded-lg bg-rose-200 text-rose-900 ring-2 ring-rose-500 animate-pulse text-left truncate">0️⃣🎙️ 念課文 0/5</span>
+    <span id="mission-quiz-status" class="px-2 py-1 rounded-lg bg-purple-100 text-purple-800 text-left truncate">1️⃣❓ 問題 0/3</span>
+    <span id="mission-gem-status" class="px-2 py-1 rounded-lg bg-amber-100 text-amber-800 text-left truncate">2️⃣🧚 生詞 0/18</span>
+    <span id="mission-chest-status" onclick="openSentencePuzzleModal(currentLesson ? currentLesson.id : gameState.unlockedMaxLesson)" class="px-2 py-1 rounded-lg bg-teal-100 text-teal-900 border border-teal-400 cursor-pointer hover:bg-teal-200 text-left truncate" title="點擊挑戰本課全部課文句子重組">3️⃣🧩 句型 0/5</span>
+    <span id="mission-write-status" class="px-2 py-1 rounded-lg bg-blue-100 text-blue-800 text-left truncate">4️⃣🖌️ 鳥居生字 0/8</span>
+</div>
+
+    <div class="flex flex-wrap items-center gap-1.5 pointer-events-auto">
+        <button onclick="openVocabBook()" class="ac-btn bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-emerald-800 flex items-center gap-1.5">
+            <span id="ui-btn-vocabbook">📖 圖鑑</span>
+            <span class="bg-emerald-900 text-emerald-100 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
+                <span>💎<span id="vocab-count-badge">0/188</span></span><span>・</span><span>✍️<span id="writing-count-badge">0/110</span></span>
+            </span>
+        </button>
+        <button onclick="openCertificateModal()" id="ui-btn-cert" class="ac-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-amber-700" title="查看學習歷程結業證書">📜 證書</button>
+        <button onclick="openSettingsModal()" id="ui-btn-settings" class="ac-btn bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-slate-900">⚙️ 設定</button>
     </div>
 </div>
 
 <!-- 🗺️ 畫面右側直立式「14島闖關進度條 / 傳送門」 -->
 <div id="island-minimap" class="fixed right-2 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center bg-amber-50/95 backdrop-blur-sm border-3 border-amber-700 rounded-2xl p-1.5 shadow-xl pointer-events-auto max-h-[76vh] overflow-y-auto gap-1">
-    <div class="text-[10px] font-black text-amber-950 bg-amber-300 px-1.5 py-0.5 rounded-md border border-amber-600 whitespace-nowrap">🗺️ 闖關進度</div>
+    <div id="ui-minimap-title" class="text-[10px] font-black text-amber-950 bg-amber-300 px-1.5 py-0.5 rounded-md border border-amber-600 whitespace-nowrap">🗺️ 闖關進度</div>
     <div id="minimap-nodes" class="flex flex-col items-center gap-1"></div>
 </div>
 
@@ -167,11 +187,11 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
 <div id="task2-guide-modal" onclick="closeTask2GuideModal()" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/55 backdrop-blur-sm p-4 pointer-events-auto cursor-pointer">
     <div onclick="event.stopPropagation()" class="ac-panel max-w-md w-full p-6 text-center border-4 border-sky-500 shadow-2xl animate-float cursor-default">
         <div class="text-5xl mb-2">🎉🧚✨</div>
-        <div class="inline-block bg-emerald-600 text-white font-black text-xs px-3 py-1 rounded-full mb-2 shadow">✅ 第一任務（回答夥伴問題 3/3）完成！</div>
+        <div id="t2-modal-badge" class="inline-block bg-emerald-600 text-white font-black text-xs px-3 py-1 rounded-full mb-2 shadow">✅ 第一任務（回答夥伴問題 3/3）完成！</div>
         <h3 id="t2-modal-title" class="text-xl md:text-2xl font-black text-amber-950 mb-2">🎯 第二任務開啟：收服生詞小精靈！</h3>
         <p id="t2-modal-desc" class="text-xs md:text-sm font-bold text-amber-900 bg-sky-50 border-2 border-sky-200 rounded-2xl p-3.5 mb-5 leading-relaxed">
             本座小島的草地與沙灘上已經召喚出漫遊的「<strong class="text-sky-700">🧚 生詞小精靈</strong>」！<br>
-            請走近觸碰牠們並完成填空挑戰，收齊本島所有生詞小精靈後，跨海橋鳥居前就會召喚出第 3 任務「<strong class="text-indigo-700">🖌️ 神來之筆</strong>」喔！
+            請走近觸碰牠們並完成填空挑戰，收齊本島所有生詞小精靈後，跨海橋鳥居前就會召喚出「<strong class="text-indigo-700">🖌️ 神來之筆</strong>」喔！
         </p>
         <button type="button" onclick="closeTask2GuideModal()" id="t2-modal-btn" class="ac-btn w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-black text-base rounded-2xl border-2 border-indigo-800">🧚 出發在島上收服生詞小精靈！</button>
     </div>
@@ -243,7 +263,7 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     </div>
 </div>
 
-<!-- Dialogue Modal (整合《課文我會讀》語音跟讀與星星計分面板) -->
+<!-- Dialogue Modal -->
 <div id="dialog-modal" class="fixed inset-x-0 bottom-0 z-30 p-2 md:p-5 hidden flex justify-center pointer-events-none">
     <div class="ac-panel max-w-3xl w-full p-4 md:p-6 pointer-events-auto relative max-h-[92vh] overflow-y-auto">
         <div class="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b-2 border-amber-200">
@@ -260,22 +280,22 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         <div id="dlg-text-line" class="text-xl md:text-2xl font-bold text-amber-950 leading-loose py-1.5 min-h-[3.8rem]"></div>
         <div id="dlg-english-line" class="text-xs md:text-sm text-indigo-700 font-medium bg-indigo-50 px-3 py-1.5 rounded-xl mt-1"></div>
 
-        <!-- 🎙️ 課文句子跟讀與計分區塊 (自由加分練習，不計入過關條件) -->
+        <!-- 🎙️ 課文句子跟讀與計分區塊 -->
         <div class="mt-2.5 p-3 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 border-2 border-orange-300 shadow-inner">
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <div class="flex items-center gap-2 flex-wrap">
                     <button type="button" id="dlg-mic-btn" onclick="toggleShadowRecording()" class="ac-btn flex items-center gap-1.5 px-4 py-2 rounded-full font-black text-xs md:text-sm bg-gradient-to-b from-orange-400 to-orange-500 text-white border-2 border-white shadow">
-                        <span id="dlg-mic-icon">🎙️</span><span id="dlg-mic-text">點此開口跟讀本句 (加分練習)</span>
+                        <span id="dlg-mic-icon">🎙️</span><span id="dlg-mic-text">點此開口跟讀本句</span>
                     </button>
                     <span id="dlg-combo-badge" class="hidden bg-gradient-to-r from-rose-500 to-orange-500 text-white font-black text-xs px-2.5 py-1 rounded-full shadow animate-bounce">🔥 2 COMBO!</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span id="dlg-shadow-stars" class="text-lg tracking-wider" title="本句跟讀星星">☆☆☆</span>
-                    <span id="dlg-shadow-score-badge" class="text-xs font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">尚未跟讀 (自由練習)</span>
+                    <span id="dlg-shadow-score-badge" class="text-xs font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">尚未跟讀</span>
                 </div>
             </div>
             <div id="dlg-recognized-box" class="hidden mt-2 text-xs font-bold text-orange-900 bg-white/90 px-3 py-1.5 rounded-xl border border-orange-200 flex items-center justify-between gap-2">
-                <div><span class="text-orange-500 font-black">👂 系統聽到了：</span><span id="dlg-recognized-text" class="font-black"></span></div>
+                <div><span id="ui-dlg-heard-label" class="text-orange-500 font-black">👂 系統聽到了：</span><span id="dlg-recognized-text" class="font-black"></span></div>
                 <span id="dlg-shadow-feedback" class="font-black text-emerald-700"></span>
             </div>
         </div>
@@ -305,11 +325,11 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 mb-3 text-center shadow-inner">
             <div class="flex items-center justify-between mb-1">
                 <p id="ui-gc-prompt" class="text-xs font-bold text-amber-700">🎯 請仔細聽題目，念完後選出正確的生詞填入空格：</p>
-                <button type="button" onclick="speakGemChallengeQuestion(true)" class="ac-btn bg-sky-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">🔊 重聽題目</button>
+                <button type="button" id="ui-gc-replay-btn" onclick="speakGemChallengeQuestion(true)" class="ac-btn bg-sky-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">🔊 重聽題目</button>
             </div>
             <h3 id="gc-question" class="text-xl md:text-2xl font-black text-amber-950 leading-relaxed my-2">題目載入中...</h3>
             <div class="min-h-[36px] flex justify-center items-center mt-2">
-                <button id="gc-hint-btn" onclick="showGemChallengeHint()" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-black px-4 py-1.5 rounded-full border border-amber-400">💡 點擊顯示提示 (注音 / 拼音)</button>
+                <button id="gc-hint-btn" onclick="showGemChallengeHint()" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-black px-4 py-1.5 rounded-full border border-amber-400">💡 點擊顯示英文與詞性提示</button>
                 <div id="gc-hint-text" class="hidden bg-sky-100 text-sky-900 font-black text-sm px-4 py-1 rounded-xl border border-sky-300"></div>
             </div>
         </div>
@@ -339,7 +359,7 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         <div onclick="event.stopPropagation()" class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-left text-sm text-amber-900 mb-3 cursor-default">
             <div class="flex items-center justify-between mb-1">
                 <span id="ui-vp-ex-label" class="font-black text-xs text-amber-700">📖 課文造句 / 例句 (Sentence)：</span>
-                <button onclick="event.stopPropagation(); speakText(currentVocabItem ? currentVocabItem.ex : '', true)" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-[11px] font-bold px-2 py-0.5 rounded-lg">🔊 朗讀造句</button>
+                <button id="ui-vp-ex-speak-btn" onclick="event.stopPropagation(); speakText(currentVocabItem ? currentVocabItem.ex : '', true)" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-[11px] font-bold px-2 py-0.5 rounded-lg">🔊 朗讀造句</button>
             </div>
             <div id="vp-example" class="font-bold text-base text-amber-950">今天，我們有兩個新同學。</div>
         </div>
@@ -446,11 +466,12 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         </div>
     </div>
 </div>
-<!-- ⚙️ 設定選單 Modal (收納音樂、語音、標音、英譯、語言切換) -->
+
+<!-- ⚙️ 設定選單 Modal -->
 <div id="settings-modal" onclick="closeSettingsModal()" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/55 backdrop-blur-sm p-4 cursor-pointer">
     <div onclick="event.stopPropagation()" class="ac-panel max-w-sm w-full p-6 text-center cursor-default">
         <div class="flex items-center justify-between border-b-2 border-amber-200 pb-2 mb-4">
-            <h3 class="text-xl font-black text-amber-950">⚙️ 遊戲與語音設定</h3>
+            <h3 id="ui-settings-title" class="text-xl font-black text-amber-950">⚙️ 遊戲與語音設定</h3>
             <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-black">✕</button>
         </div>
         <div class="flex flex-col gap-2.5">
@@ -460,12 +481,13 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
             <button onclick="cyclePhoneticMode()" id="btn-phonetic-mode" class="ac-btn w-full bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm py-2.5 rounded-xl border-2 border-sky-800">🔤 標音：注音</button>
             <button onclick="toggleEnglishMode()" id="btn-eng-mode" class="ac-btn w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm py-2.5 rounded-xl border-2 border-indigo-800">🌐 英譯：開</button>
         </div>
-        <button onclick="closeSettingsModal()" class="ac-btn w-full mt-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-black rounded-xl text-sm">完成並關閉</button>
+        <button onclick="closeSettingsModal()" id="ui-settings-close-btn" class="ac-btn w-full mt-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-black rounded-xl text-sm">完成並關閉</button>
     </div>
 </div>
 
 <!-- 🧩 句型重組 (全課文語序排排看) 寶箱挑戰 Modal -->
-<div id="sentence-puzzle-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 md:p-4">    <div onclick="event.stopPropagation()" class="ac-panel max-w-xl w-full p-5 md:p-6 text-center border-4 border-teal-500 cursor-default max-h-[92vh] overflow-y-auto">
+<div id="sentence-puzzle-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 md:p-4">
+    <div onclick="event.stopPropagation()" class="ac-panel max-w-xl w-full p-5 md:p-6 text-center border-4 border-teal-500 cursor-default max-h-[92vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b-2 border-amber-200 pb-2 mb-2">
             <div class="text-left">
                 <span id="sp-badge" class="bg-teal-600 text-white font-black text-xs px-3 py-1 rounded-full">🧩 第 1 課・課文句型重組寶箱</span>
@@ -474,55 +496,53 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
             <button onclick="closeSentencePuzzleModal()" class="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-black">✕</button>
         </div>
 
-        <!-- 本課句子號碼切換列 -->
         <div id="sp-line-tabs" class="flex flex-wrap justify-center gap-1.5 mb-3 p-1.5 bg-teal-50 rounded-xl border border-teal-200"></div>
 
         <div class="flex items-center justify-between gap-2 mb-2">
             <span id="sp-speaker-tag" class="bg-amber-600 text-white font-black text-xs px-2.5 py-1 rounded-full">👤 老師</span>
-            <button type="button" onclick="speakCurrentPuzzleSentence()" class="ac-btn bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-3 py-1 rounded-xl">🔊 聽本句發音提示</button>
+            <button type="button" id="ui-sp-listen-btn" onclick="speakCurrentPuzzleSentence()" class="ac-btn bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-3 py-1 rounded-xl">🔊 聽本句發音提示</button>
         </div>
         <div id="sp-english-hint" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl mb-3"></div>
 
-        <p class="text-[11px] font-bold text-amber-800 mb-1.5">👇 請依序點擊下方詞卡排出正確課文句子（點擊上方已排好的詞卡可退回）：</p>
+        <p id="ui-sp-instruction" class="text-[11px] font-bold text-amber-800 mb-1.5">👇 請依序點擊下方詞卡排出正確課文句子（點擊上方已排好的詞卡可退回）：</p>
         <div id="sp-answer-slots" class="min-h-[4rem] p-3 rounded-2xl bg-amber-50 border-2 border-dashed border-amber-400 flex flex-wrap items-center justify-center gap-2 mb-3"></div>
         <div id="sp-word-bank" class="flex flex-wrap items-center justify-center gap-2 mb-4 min-h-[3rem]"></div>
         <div id="sp-feedback" class="hidden p-2.5 rounded-xl font-bold text-sm mb-3"></div>
 
         <div class="flex gap-2">
-            <button onclick="resetSentencePuzzle()" class="ac-btn flex-1 py-2.5 bg-gray-200 text-gray-800 font-bold rounded-xl text-sm">🔄 重新排列本句</button>
-            <button onclick="checkSentencePuzzleAnswer()" class="ac-btn flex-[1.5] py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl text-sm">✅ 送出檢查 (+EXP)</button>
+            <button onclick="resetSentencePuzzle()" id="ui-sp-reset-btn" class="ac-btn flex-1 py-2.5 bg-gray-200 text-gray-800 font-bold rounded-xl text-sm">🔄 重新排列本句</button>
+            <button onclick="checkSentencePuzzleAnswer()" id="ui-sp-submit-btn" class="ac-btn flex-[1.5] py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl text-sm">✅ 送出檢查 (+EXP)</button>
         </div>
     </div>
 </div>
-<!-- 📜 學習歷程成績單與結業證書 Modal (含 L1~L12 每課累計明細) -->
+
+<!-- 📜 學習歷程成績單與結業證書 Modal -->
 <div id="certificate-modal" onclick="closeCertificateModal()" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/65 backdrop-blur-sm p-3 md:p-4 cursor-pointer">
     <div onclick="event.stopPropagation()" class="ac-panel max-w-2xl w-full p-5 md:p-7 text-center border-8 border-double border-amber-500 bg-gradient-to-b from-amber-50 via-white to-amber-50 shadow-2xl cursor-default relative max-h-[92vh] flex flex-col">
         <div class="flex items-center justify-between border-b-2 border-amber-200 pb-2 mb-2 shrink-0">
             <div class="text-left">
                 <span class="bg-amber-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full">LET'S LEARN MANDARIN BOOK 2</span>
-                <h2 class="text-xl md:text-2xl font-black text-amber-950">🏆 學華語大冒險・每課累計學習證書</h2>
+                <h2 id="ui-cert-title" class="text-xl md:text-2xl font-black text-amber-950">🏆 學華語大冒險・每課累計學習證書</h2>
             </div>
             <button onclick="closeCertificateModal()" class="w-8 h-8 rounded-full bg-amber-100 text-amber-900 font-black">✕</button>
         </div>
 
-        <!-- 學生總覽資訊列 -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-amber-100/70 border-2 border-amber-300 rounded-2xl p-2.5 mb-3 text-xs font-bold text-amber-950 shrink-0">
-            <div>👤 冒險家：<strong id="cert-name" class="text-rose-600 text-sm">小華</strong> (<span id="cert-level">Lv.1</span>)</div>
-            <div>🏝️ 已過關：<strong id="cert-islands" class="text-emerald-700">0 / 12 課</strong></div>
-            <div>🎙️ 跟讀總星數：<strong id="cert-stars" class="text-orange-600">0 ⭐</strong></div>
-            <div>📅 日期：<strong id="cert-date" class="text-gray-700"></strong></div>
+            <div><span id="ui-cert-lbl-name">👤 冒險家：</span><strong id="cert-name" class="text-rose-600 text-sm">小華</strong> (<span id="cert-level">Lv.1</span>)</div>
+            <div><span id="ui-cert-lbl-islands">🏝️ 已過關：</span><strong id="cert-islands" class="text-emerald-700">0 / 12 課</strong></div>
+            <div><span id="ui-cert-lbl-stars">🎙️ 跟讀總星數：</span><strong id="cert-stars" class="text-orange-600">0 ⭐</strong></div>
+            <div><span id="ui-cert-lbl-date">📅 日期：</span><strong id="cert-date" class="text-gray-700"></strong></div>
         </div>
 
-        <!-- 📊 第一課 ～ 第十二課 逐課累計進度表 -->
-        <div class="text-left text-xs font-black text-amber-900 mb-1 shrink-0">📊 各課學習進度明細（完成指定課數即可截圖交作業）：</div>
+        <div id="ui-cert-table-header" class="text-left text-xs font-black text-amber-900 mb-1 shrink-0">📊 各課學習進度明細（完成指定課數即可截圖交作業）：</div>
         <div class="flex-1 overflow-y-auto border-2 border-amber-300 rounded-2xl bg-white shadow-inner p-2 space-y-1.5" id="cert-lesson-rows"></div>
 
         <div class="mt-3 pt-2 border-t border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
             <div class="text-left">
-                <p class="text-[11px] font-black text-emerald-700">📸 請直接截圖此畫面傳給老師，即可認證目前已完成的課別進度！</p>
+                <p id="ui-cert-screenshot-tip" class="text-[11px] font-black text-emerald-700">📸 請直接截圖此畫面傳給老師，即可認證目前已完成的課別進度！</p>
                 <p class="text-[10px] font-bold text-amber-800/70">Powered by Google AI Studio | Sophia老師的AI練習本</p>
             </div>
-            <button onclick="closeCertificateModal()" class="ac-btn px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl border-2 border-amber-700 text-sm whitespace-nowrap">🎉 繼續冒險</button>
+            <button onclick="closeCertificateModal()" id="ui-cert-close-btn" class="ac-btn px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black rounded-xl border-2 border-amber-700 text-sm whitespace-nowrap">🎉 繼續冒險</button>
         </div>
     </div>
 </div>
@@ -562,17 +582,17 @@ function buildCharDetailsHTML(charsArray, preferredLessonId = null, includeSente
         const ph = info ? { zhuyin: info.zh, pinyin: info.py } : getCharPhonetics(ch);
         const sentObj = getSentenceForCharacter(ch, preferredLessonId);
         if (info) {
-            const wordsChips = (info.words || []).map(w => `<button type="button" onclick="event.stopPropagation(); speakText('${w}', true)" class="ac-btn bg-amber-100 hover:bg-amber-200 text-amber-950 font-black text-xs px-2.5 py-0.5 rounded-lg border border-amber-400">🔊 ${w}</button>`).join(' ');
+            const wordsChips = (info.words || []).map(w => `<button type="button" onclick="event.stopPropagation(); speakText('${w}', true)" class="ac-btn bg-amber-100 hover:bg-amber-200 text-amber-950 font-black text-xs px-2.5 py-0.5 rounded-lg border border-amber-400">🔊 ${tc(w)}</button>`).join(' ');
             const simBadge = info.sim ? `<span class="bg-slate-100 text-slate-700 text-[11px] font-bold px-2 py-0.5 rounded border border-slate-300">${t('簡體', 'Simp')}: ${info.sim}</span>` : '';
             const polyBadge = info.poly ? `<span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2 py-0.5 rounded border border-purple-300">${t('破音字', 'Alt')}: ${info.poly.map(p => `${p.zh}/${p.py}`).join(', ')}</span>` : '';
             html += `<div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <span onclick="event.stopPropagation(); speakText('${ch}', true)" class="w-10 h-10 rounded-xl bg-amber-500 text-white font-black text-2xl flex items-center justify-center shadow cursor-pointer">${ch}</span>
+                        <span onclick="event.stopPropagation(); speakText('${ch}', true)" class="w-10 h-10 rounded-xl bg-amber-500 text-white font-black text-2xl flex items-center justify-center shadow cursor-pointer">${tc(ch)}</span>
                         <div>
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="text-xs font-black text-sky-900 bg-sky-100 px-2 py-0.5 rounded">${info.zh} / ${info.py}</span>
-                                <span class="text-xs font-black text-rose-900 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">${t('部首', 'Radical')}: ${info.rad}</span>
+                                <span class="text-xs font-black text-rose-900 bg-rose-100 px-2 py-0.5 rounded border border-rose-300">${t('部首', 'Radical')}: ${tc(info.rad)}</span>
                                 <span class="text-xs font-black text-emerald-900 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">${t('筆畫', 'Strokes')}: ${info.str} ${t('畫', '')}</span>
                                 ${simBadge}${polyBadge}
                             </div>
@@ -581,10 +601,10 @@ function buildCharDetailsHTML(charsArray, preferredLessonId = null, includeSente
                     </div>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-1.5"><span class="text-xs font-black text-amber-900">🧩 ${t('延伸造詞', 'Words')}:</span>${wordsChips}</div>
-                ${includeSentence ? `<div class="mt-2 pt-1.5 border-t border-amber-200/80 flex items-center justify-between gap-2"><div class="text-xs font-bold text-amber-950">📖 <span class="text-amber-700">${t('造句', 'Sentence')}:</span> ${sentObj.sentence}</div><button type="button" onclick="event.stopPropagation(); speakText('${sentObj.sentence}', true)" class="ac-btn bg-sky-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-lg whitespace-nowrap">🔊 ${t('聽造句', 'Listen')}</button></div>` : ''}
+                ${includeSentence ? `<div class="mt-2 pt-1.5 border-t border-amber-200/80 flex items-center justify-between gap-2"><div class="text-xs font-bold text-amber-950">📖 <span class="text-amber-700">${t('造句', 'Sentence')}:</span> ${tc(sentObj.sentence)}</div><button type="button" onclick="event.stopPropagation(); speakText('${sentObj.sentence}', true)" class="ac-btn bg-sky-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-lg whitespace-nowrap">🔊 ${t('聽造句', 'Listen')}</button></div>` : ''}
             </div>`;
         } else {
-            html += `<div class="p-2 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-9 h-9 rounded-xl bg-amber-400 text-amber-950 font-black text-xl flex items-center justify-center">${ch}</span><span class="text-xs font-bold text-sky-900 bg-sky-100 px-2 py-0.5 rounded">${ph.zhuyin} / ${ph.pinyin}</span></div><button type="button" onclick="event.stopPropagation(); speakText('${ch}', true)" class="ac-btn bg-sky-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">🔊</button></div>`;
+            html += `<div class="p-2 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-9 h-9 rounded-xl bg-amber-400 text-amber-950 font-black text-xl flex items-center justify-center">${tc(ch)}</span><span class="text-xs font-bold text-sky-900 bg-sky-100 px-2 py-0.5 rounded">${ph.zhuyin} / ${ph.pinyin}</span></div><button type="button" onclick="event.stopPropagation(); speakText('${ch}', true)" class="ac-btn bg-sky-500 text-white text-xs font-bold px-2.5 py-1 rounded-lg">🔊</button></div>`;
         }
     });
     return html;
@@ -689,7 +709,6 @@ const SHOP_FURNITURE = [
     { id: 'shelf_L12', name: '📚 室內紅木古典書架', nameEn: '📚 Mahogany Bookshelf', price: 110, reqLesson: 12, type: 'furniture', placement: 'indoor', desc: '【第12課解鎖】多層紅木大書架，並列彩色立體書籍（靠左牆面向右方）！', descEn: '[Unlock L12] Classic mahogany bookshelf filled with colorful books!' }
 ];
 
-// 👕 每一關過關都有一套專屬新款衣服與立體頭飾 (L1 ~ L12 全齊)
 const SHOP_OUTFITS = [
     { id: 'default_0', name: '👕 活力紅上衣 (初始)', nameEn: '👕 Energetic Red Shirt', price: 0, reqLesson: 0, color: 0xe11d48, hat: 'none' },
     { id: 'default_1', name: '👕 海洋藍上衣 (初始)', nameEn: '👕 Ocean Blue Shirt', price: 0, reqLesson: 0, color: 0x0284c7, hat: 'none' },
@@ -785,11 +804,13 @@ function loadGameProgress() {
 window.resetGameProgress = function() {
     if (confirm(t('確定要清除所有過關紀錄、金幣與傢俱，從第 1 課小島重新開始嗎？', 'Are you sure you want to clear all saved progress and restart from Lesson 1 Island?'))) {
         localStorage.removeItem(SAVE_STORAGE_KEY);
+        localStorage.removeItem(SAVE_STORAGE_KEY + '_puzzles');
         location.reload();
     }
 };
 
-const T2S_MAP = {'學':'学','華':'华','語':'语','進':'进','動':'动','島':'岛','嶼':'屿','險':'险','點':'点','擊':'击','鍵':'键','讀':'读','課':'课','詞':'词','靈':'灵','夥':'伙','紅':'红','鳥':'鸟','過':'过','關':'关','請':'请','輸':'输','個':'个','選':'选','擇':'择','陽':'阳','顏':'颜','藍':'蓝','綠':'绿','開':'开','發':'发','條':'条','題':'题','總':'总','門':'门','內':'内','間':'间','終':'终','榮':'荣','盃':'杯','對':'对','歡':'欢','躍':'跃','標':'标','譯':'译','圖':'图','鑑':'鉴','與':'与','裝':'装','視':'视','轉':'转','離':'离','莊':'庄','話':'话','聽':'听','閉':'闭','預':'预','覽':'览','筆':'笔','畫':'画','報':'报','獎':'奖','勵':'励','寶':'宝','顯':'显','認':'认','識':'识','張':'张','紹':'绍','遊':'游','書':'书','醫':'医','電':'电','腦':'脑','銀':'银','樣':'样','後':'后','買':'买','東':'东','魚':'鱼','還':'还','級':'级','場':'场','塊':'块','麵':'面','飯':'饭','湯':'汤','餓':'饿','週':'周','現':'现','變':'变','黃':'黄','時':'时','樹':'树','葉':'叶','氣':'气','農':'农','曆':'历','說':'说','會':'会','給':'给','灣':'湾','貼':'贴','聯':'联','該':'该','來':'来','覺':'觉','趕':'赶','臉':'脸','別':'别','乾':'干','淨':'净','寵':'宠','隻':'只','帶':'带','貓':'猫','愛':'爱','養':'养','見':'见','餵':'喂','針':'针','裡':'里','為':'为','國':'国','臺':'台','紐':'纽','約':'约','園':'园','長':'长','頸':'颈','鵝':'鹅','網':'网','寫':'写','沒':'没','體':'体','簡':'简','練':'练','習':'习','實':'实','際':'际','傢':'家','俱':'具','飾':'饰','購':'购','擺':'摆','設':'设','換':'换','傳':'传','鎖':'锁','確':'确','準':'准','檢':'检','們':'们','這':'这','那':'哪','誰':'谁','歲':'岁','運':'运','媽':'妈','爺':'爷','幫':'帮','專':'专','連':'连','慣':'惯','數':'数','處':'处','邊':'边','醫':'医','熱':'热','漢':'汉','麥':'麦','錯':'错','節':'节','鬧':'闹','牠':'它','樂':'乐','陽':'阳','樓':'楼','頭':'头','雙':'双','濃':'浓','楓':'枫','搖':'摇','窩':'窝','蘿':'萝','蔔':'卜','鐵':'铁','頂':'顶','廚':'厨','師':'师','圍':'围','賀':'贺','龍':'龙','儲':'储','紀':'纪','錄':'录','順':'顺','階':'阶','啟':'启','橋':'桥','陸':'陆'};
+// 完整繁轉簡字庫（涵蓋所有新擴充功能、證書、句型寶箱、豪華傢俱與神寵）
+const T2S_MAP = {'學':'学','華':'华','語':'语','進':'进','動':'动','島':'岛','嶼':'屿','險':'险','點':'点','擊':'击','鍵':'键','讀':'读','課':'课','詞':'词','靈':'灵','夥':'伙','紅':'红','鳥':'鸟','過':'过','關':'关','請':'请','輸':'输','個':'个','選':'选','擇':'择','陽':'阳','顏':'颜','藍':'蓝','綠':'绿','開':'开','發':'发','條':'条','題':'题','總':'总','門':'门','內':'内','間':'间','終':'终','榮':'荣','盃':'杯','對':'对','歡':'欢','躍':'跃','標':'标','譯':'译','圖':'图','鑑':'鉴','與':'与','裝':'装','視':'视','轉':'转','離':'离','莊':'庄','話':'话','聽':'听','閉':'闭','預':'预','覽':'览','筆':'笔','畫':'画','報':'报','獎':'奖','勵':'励','寶':'宝','顯':'显','認':'认','識':'识','張':'张','紹':'绍','遊':'游','書':'书','醫':'医','電':'电','腦':'脑','銀':'银','樣':'样','後':'后','買':'买','東':'东','魚':'鱼','還':'还','級':'级','場':'场','塊':'块','麵':'面','飯':'饭','湯':'汤','餓':'饿','週':'周','現':'现','變':'变','黃':'黄','時':'时','樹':'树','葉':'叶','氣':'气','農':'农','曆':'历','說':'说','會':'会','給':'给','灣':'湾','貼':'贴','聯':'联','該':'该','來':'来','覺':'觉','趕':'赶','臉':'脸','別':'别','乾':'干','淨':'净','寵':'宠','隻':'只','帶':'带','貓':'猫','愛':'爱','養':'养','見':'见','餵':'喂','針':'针','裡':'里','為':'为','國':'国','臺':'台','紐':'纽','約':'约','園':'园','長':'长','頸':'颈','鵝':'鹅','網':'网','寫':'写','沒':'没','體':'体','簡':'简','練':'练','習':'习','實':'实','際':'际','傢':'家','俱':'具','飾':'饰','購':'购','擺':'摆','設':'设','換':'换','傳':'传','鎖':'锁','確':'确','準':'准','檢':'检','們':'们','這':'这','那':'那','誰':'谁','歲':'岁','運':'运','媽':'妈','爺':'爷','幫':'帮','專':'专','連':'连','慣':'惯','數':'数','處':'处','邊':'边','熱':'热','漢':'汉','麥':'麦','錯':'错','節':'节','鬧':'闹','牠':'它','樂':'乐','樓':'楼','頭':'头','雙':'双','濃':'浓','楓':'枫','搖':'摇','窩':'窝','蘿':'萝','蔔':'卜','鐵':'铁','頂':'顶','廚':'厨','師':'师','圍':'围','賀':'贺','龍':'龙','儲':'储','紀':'纪','錄':'录','順':'顺','階':'阶','啟':'启','橋':'桥','陸':'陆','證':'证','組':'组','排':'排','檢':'检','查':'查','細':'细','歷':'历','程':'程','截':'截','檔':'档','風':'风','櫻':'樱','琴':'琴','鶴':'鹤','噴':'喷','池':'池','珊':'瑚','熱':'热','帶':'带','彩':'彩','虹':'虹','氣':'气','球':'球','城':'城','堡':'堡','袍':'袍','際':'际','裝':'装','櫃':'柜','闖':'闯','全':'全','螢':'萤','幕':'幕','退':'退','回':'回','箱':'箱','音':'音','樂':'乐','曲':'曲','風':'风','特':'特','訓':'训','消':'消','除':'除','拍':'拍','照':'照','展':'展','示':'示','模':'模','式':'式','密':'密','碼':'码'};
 
 function toSimp(str) {
     if (!str) return '';
@@ -822,11 +843,20 @@ function applyUILanguage() {
     const welcomeLangBtn = document.getElementById('welcome-lang-btn');
     if (welcomeLangBtn) welcomeLangBtn.textContent = gameState.uiLang === 'zh' ? '🌐 切换：简中 / EN' : (gameState.uiLang === 'cn' ? '🌐 切换：EN / 繁中' : '🌐 UI: 繁中 / 简中');
     const topLangBtn = document.getElementById('btn-ui-lang');
-    if (topLangBtn) topLangBtn.textContent = gameState.uiLang === 'zh' ? '🌐 介面：繁中' : (gameState.uiLang === 'cn' ? '🌐 界面：简中' : '🌐 UI: EN');
+    if (topLangBtn) topLangBtn.textContent = gameState.uiLang === 'zh' ? '🌐 介面：繁體中文' : (gameState.uiLang === 'cn' ? '🌐 界面：简体中文' : '🌐 Language: English');
+
+    const hasSave = Boolean(localStorage.getItem(SAVE_STORAGE_KEY));
+    if (hasSave) {
+        setTxt('save-status-welcome', `💾 已載入存檔 (目前解鎖至第 ${gameState.unlockedMaxLesson + 1} 島・第 ${gameState.unlockedMaxLesson} 課)`, `💾 Save Loaded (Unlocked up to Island #${gameState.unlockedMaxLesson + 1} / L${gameState.unlockedMaxLesson})`);
+        setTxt('ui-start-btn', `⛵ 繼續學華語大冒險 (第 ${gameState.unlockedMaxLesson} 課)！`, `⛵ Continue Adventure (Lesson ${gameState.unlockedMaxLesson})!`);
+    } else {
+        setTxt('save-status-welcome', '💾 支援自動儲存進度', '💾 Auto-Save Supported');
+        setTxt('ui-start-btn', '⛵ 揚帆展開學華語大冒險！', '⛵ Set Sail on Mandarin Adventure!');
+    }
 
     setTxt('ui-welcome-badge', '🏝️ 第二冊 14座小島跳島大冒險', '🏝️ Book 2 14-Island Hopping Adventure');
     setTxt('ui-welcome-title', '學華語大冒險', "Let's Learn Mandarin Adventure");
-    setTxt('ui-welcome-desc', '從南端「溫馨小屋島」出發，跨越木橋探索 12 座課程島，前往最北端「榮耀金盃島」（共 14 座島）！登島後：📘先找主角讀課文（支援語音跟讀計分） ➔ 1️⃣回答問題 ➔ 2️⃣收服「🧚 生詞小精靈」 ➔ 3️⃣揮動「🖌️ 神來之筆」過關換新衣！', 'Start from Cabin Island (#1), cross wooden bridges through 12 Lesson Islands to Trophy Island (#14)! 📘 Read Lesson first (with Speech Shadowing) ➔ 1️⃣ Quizzes ➔ 2️⃣ Fairies ➔ 3️⃣ Magic Brush & New Outfits!');
+    setTxt('ui-welcome-desc', '從南端「溫馨小屋島」出發，跨越木橋探索 12 座課程島，前往最北端「榮耀金盃島」（共 14 座島）！登島後：📘先找主角讀課文（支援語音跟讀計分） ➔ 1️⃣回答問題 ➔ 2️⃣收服「🧚 生詞小精靈」 ➔ 3️⃣句型寶箱 ➔ 4️⃣揮動「🖌️ 神來之筆」過關換新衣！', 'Start from Cabin Island (#1), cross bridges through 12 Lesson Islands to Trophy Island (#14)! 📘 Read Lesson aloud ➔ 1️⃣ Quizzes ➔ 2️⃣ Vocab Fairies ➔ 3️⃣ Sentence Puzzles ➔ 4️⃣ Magic Brush & New Outfits!');
     setTxt('ui-name-label', '👤 請輸入你的冒險家名字：', '👤 Enter Your Adventurer Name:');
     setTxt('ui-gender-label', '🚻 選擇你的角色性別：', '🚻 Choose Your Gender:');
     setTxt('ui-boy-text', '陽光男生', 'Sunny Boy');
@@ -834,9 +864,14 @@ function applyUILanguage() {
     setTxt('ui-color-label', '🎨 選擇你的初始服裝色系：', '🎨 Choose Your Outfit Color:');
     setTxt('ui-col-0', '活力紅', 'Red'); setTxt('ui-col-1', '海洋藍', 'Blue'); setTxt('ui-col-2', '森林綠', 'Green'); setTxt('ui-col-3', '向日葵', 'Yellow');
     setTxt('ui-reset-btn', '🗑️ 清除儲存紀錄並重新開始', '🗑️ Reset Saved Progress');
-    setTxt('ui-mission-prefix', '本島順序', 'Island Order');
-    setTxt('btn-wardrobe-quick', '👕 換裝與商店', '👕 Wardrobe & Shop');
-    setTxt('ui-btn-vocabbook', '📖 生詞與生字圖鑑', '📖 Vocab & Chars');
+    setTxt('ui-mission-prefix', '本島順序', 'Island Tasks');
+    setTxt('hud-save-indicator', '💾 自動存檔', '💾 Auto-Save');
+    setTxt('ui-btn-vocabbook', '📖 圖鑑', '📖 Book');
+    setTxt('ui-btn-cert', '📜 證書', '📜 Cert');
+updateFullscreenButtonUI();
+    setTxt('ui-btn-settings', '⚙️ 設定', '⚙️ Settings');
+    setTxt('ui-minimap-title', '🗺️ 闖關進度', '🗺️ Islands');
+
     setTxt('ui-finale-title', '恭喜完成第 12 課全部挑戰！', 'Congrats on clearing Lesson 12!');
     setTxt('ui-finale-sub', '你也同時解鎖了第 12 課限定「🥷 夜行忍者服」！11 位夥伴已齊聚最北端第 14 座島「榮耀金盃島」為你歡呼跳躍，快前往金盃島派對吧！', 'You unlocked the L12 Night Ninja Suit! All 11 friends are cheering for you on Trophy Island (#14)!');
     setTxt('ui-finale-btn', '🎉 換上新衣並一鍵登陸金盃島！', '🎉 Equip New Suit & Teleport to Trophy Island!');
@@ -844,16 +879,23 @@ function applyUILanguage() {
     setTxt('ui-dpad-act', '互動', 'Act');
     setTxt('indoor-indicator', '🏠 目前位置：我的小屋（室內房間）', '🏠 Location: Inside My Cabin');
     setTxt('ui-cam-left', '↺ 視角左轉', '↺ Cam Left'); setTxt('ui-cam-reset', '🧭 正視角', '🧭 Reset Cam'); setTxt('ui-cam-right', '視角右轉 ↻', 'Cam Right ↻');
+    setTxt('ui-cam-photo', '📷 拍照', '📷 Photo');
+
     setTxt('ui-dlg-replay', '🔊 聽老師示範', '🔊 Listen'); setTxt('ui-dlg-close', '✕ 關閉', '✕ Close');
+    setTxt('ui-dlg-heard-label', '👂 系統聽到了：', '👂 System heard: ');
     setTxt('ui-dlg-vocab-tip', '💡 點擊下方生詞可預覽字卡、部首筆畫與造句（讀完課文先回答夥伴問題，再在島上追捕「🧚 生詞小精靈」）：', '💡 Click any word below to view radical, strokes & sentences (Answer partner quizzes first, then catch "🧚 Vocab Fairies" on the island!):');
     setTxt('btn-prev-line', '◀ 上一句', '◀ Prev');
+
     setTxt('gc-badge', '🧚 生詞小精靈・填空收服挑戰', '🧚 Vocab Fairy・Fill-in-the-Blank');
     setTxt('ui-gc-leave', '✕ 先放走牠', '✕ Let It Go');
     setTxt('ui-gc-prompt', '🎯 請仔細聽題目，念完後選出正確的生詞填入空格：', '🎯 Listen carefully to the sentence, then choose the correct word after it finishes:');
-    setTxt('gc-hint-btn', '💡 點擊顯示提示 (注音 / 拼音)', '💡 Show Hint (Zhuyin / Pinyin)');
+    setTxt('ui-gc-replay-btn', '🔊 重聽題目', '🔊 Replay Audio');
+    setTxt('gc-hint-btn', '💡 點擊顯示英文與詞性提示 (不洩漏國字)', '💡 Show English Meaning Hint');
+
     setTxt('vp-capture-banner', '🧚 遭遇野生「生詞小精靈」！先看熟這張字卡，再點下方按鈕答題收服牠！', '🧚 Wild "Vocab Fairy" Encounter! Review this card first, then click below to start the quiz!');
     setTxt('vp-preview-banner', '📖 生詞與生字詳解卡（支援 ◀ ▶ 切換上下頁）', '📖 Vocab & Character Card (Use ◀ ▶ to switch)');
     setTxt('ui-vp-ex-label', '📖 課文造句 / 例句 (Sentence)：', '📖 Lesson Sentence / Example:');
+    setTxt('ui-vp-ex-speak-btn', '🔊 朗讀造句', '🔊 Listen Sentence');
     setTxt('ui-vp-speak-btn', '🔊 發音朗讀', '🔊 Pronounce');
     setTxt('vp-start-quiz-btn', '⚡ 準備好了！開始收服挑戰 ▶', '⚡ Ready! Start Capture Quiz ▶');
     setTxt('ui-vp-close-hint', '💡 點擊空白處或按空白鍵 (Space / ESC) 即可關閉', '💡 Click outside or press Space / ESC to close');
@@ -871,6 +913,33 @@ function applyUILanguage() {
     setTxt('ui-shop-furn-header', '🛋️ 小屋島庭院與室內精美傢俱 / 寵物', '🛋️ Furniture & Pets');
     setTxt('ui-shop-outfit-header', '👕 每關解鎖新款衣服與造型裝扮 (L1~L12)', '👕 Unlockable Stage Outfits & Costumes (L1~L12)');
 
+    // 設定選單、句型重組寶箱、結業證書的多語系文字
+    setTxt('ui-settings-title', '⚙️ 遊戲與語音設定', '⚙️ Game & Voice Settings');
+    setTxt('ui-settings-close-btn', '完成並關閉', 'Done & Close');
+    setTxt('ui-teacher-mode-btn', '👩‍🏫 教師課堂展示模式', '👩‍🏫 Teacher Demo Mode');
+    const styleNames = [
+        t('🎼 曲風：溫馨島嶼 (點此換歌)', '🎼 Track: Cozy Island (Switch)'),
+        t('🎼 曲風：輕快木琴 (點此換歌)', '🎼 Track: Lively Marimba (Switch)'),
+        t('🎼 曲風：寧靜八音盒 (點此換歌)', '🎼 Track: Calm Music Box (Switch)')
+    ];
+    const styleBtn = document.getElementById('btn-bgm-style');
+    if (styleBtn) styleBtn.textContent = styleNames[gameState.bgmStyle || 0];
+
+    setTxt('ui-sp-listen-btn', '🔊 聽本句發音提示', '🔊 Listen to Sentence Hint');
+    setTxt('ui-sp-instruction', '👇 請依序點擊下方詞卡排出正確課文句子（點擊上方已排好的詞卡可退回）：', '👇 Click the word cards below in order to form the sentence (click top cards to put back):');
+    setTxt('ui-sp-reset-btn', '🔄 重新排列本句', '🔄 Reset Sentence');
+    setTxt('ui-sp-submit-btn', '✅ 送出檢查 (+EXP)', '✅ Check Answer (+EXP)');
+
+    setTxt('ui-cert-title', '🏆 學華語大冒險・每課累計學習證書', "🏆 Let's Learn Mandarin・Progress Certificate");
+    setTxt('ui-cert-lbl-name', '👤 冒險家：', '👤 Adventurer: ');
+    setTxt('ui-cert-lbl-islands', '🏝️ 已過關：', '🏝️ Cleared: ');
+    setTxt('ui-cert-lbl-stars', '🎙️ 跟讀總星數：', '🎙️ Reading Stars: ');
+    setTxt('ui-cert-lbl-date', '📅 日期：', '📅 Date: ');
+    setTxt('ui-cert-table-header', '📊 各課學習進度明細（完成指定課數即可截圖交作業）：', '📊 Lesson Progress Details (Take a screenshot to submit your assignment):');
+    setTxt('ui-cert-screenshot-tip', '📸 請直接截圖此畫面傳給老師，即可認證目前已完成的課別進度！', '📸 Take a screenshot of this certificate and send it to your teacher!');
+    setTxt('ui-cert-close-btn', '🎉 繼續冒險', '🎉 Keep Exploring');
+    setTxt('t2-modal-badge', '✅ 第一任務（回答夥伴問題 3/3）完成！', '✅ Task 1 (Partner Quizzes 3/3) Complete!');
+
     const bgmBtn = document.getElementById('btn-bgm-mode');
     if (bgmBtn) bgmBtn.textContent = gameState.bgmEnabled ? t('🎵 音樂：開', '🎵 BGM: ON') : t('🔇 音樂：關', '🔇 BGM: OFF');
     const hudMuteBtn = document.getElementById('btn-mute-mode');
@@ -881,8 +950,18 @@ function applyUILanguage() {
     document.getElementById('btn-phonetic-mode').textContent = phLabels[gameState.phoneticMode];
     document.getElementById('btn-eng-mode').textContent = t(`🌐 英譯：${gameState.showEnglish ? '開' : '關'}`, `🌐 Eng Sub: ${gameState.showEnglish ? 'ON' : 'OFF'}`);
 
+    updateShadowMicButtonUI();
+
+    // 動態更新所有 3D 世界漂浮標籤的語言
+    floatingLabels.forEach(item => {
+        if (item.zhText && item.el) {
+            const txt = gameState.uiLang === 'en' ? (item.enText || item.zhText) : tc(item.zhText);
+            item.el.innerHTML = `<span class="bg-amber-950/85 text-amber-50 px-2.5 py-0.5 rounded-full text-xs font-bold shadow border border-amber-400">${txt}</span>`;
+        }
+    });
+
     activeVocabGems.forEach(g => {
-        if (g.labelObj && g.labelObj.el) g.labelObj.el.innerHTML = `<span class="bg-gradient-to-r from-sky-500 to-indigo-600 text-white px-2.5 py-0.5 rounded-full text-xs font-black shadow-lg border-2 border-white">${t('🧚 生詞小精靈', '🧚 Vocab Fairy')}</span>`;
+        if (g.labelObj && g.labelObj.el) g.labelObj.innerHTML = `<span class="bg-gradient-to-r from-sky-500 to-indigo-600 text-white px-2.5 py-0.5 rounded-full text-xs font-black shadow-lg border-2 border-white">${t('🧚 生詞小精靈', '🧚 Vocab Fairy')}</span>`;
     });
     updateMissionBanner(currentLesson ? currentLesson.id : gameState.unlockedMaxLesson);
     populateTeleportSelect();
@@ -892,6 +971,8 @@ function applyUILanguage() {
     if (!document.getElementById('writing-modal').classList.contains('hidden')) renderWritingModalState(false);
     if (!document.getElementById('vocab-book-modal').classList.contains('hidden')) renderVocabBook();
     if (!document.getElementById('shop-modal').classList.contains('hidden')) renderShopItems();
+    if (!document.getElementById('sentence-puzzle-modal').classList.contains('hidden')) loadCurrentPuzzleLineState();
+    if (!document.getElementById('certificate-modal').classList.contains('hidden')) openCertificateModal();
 }
 
 const SPEAKER_VOICE_PROFILES = {
@@ -901,7 +982,6 @@ const SPEAKER_VOICE_PROFILES = {
     '大文':{gender:'male',voiceIdx:0,pitch:0.80,rate:0.94},'東明':{gender:'male',voiceIdx:0,pitch:0.75,rate:0.92},'心美哥哥':{gender:'male',voiceIdx:0,pitch:0.66,rate:0.92},'爸爸':{gender:'male',voiceIdx:0,pitch:0.54,rate:0.88}
 };
 
-// TTS 破音字過濾器（移植自《課文我會讀》確保自然發音）
 function filterTtsPronunciation(text) {
     if (!text) return '';
     let tStr = text;
@@ -970,9 +1050,6 @@ function speakText(text, forceWhenMuted = false, speakerName = null, onEndCallba
     } catch (e) { if (onEndCallback) setTimeout(onEndCallback, 800); }
 }
 
-// ============================================================================
-// 🎙️ 課文句子跟讀與計分系統（完整移植自附件《課文我會讀》，不影響過關硬性條件）
-// ============================================================================
 const HOMOPHONE_ALIASES = {
     '臺': ['台', '抬', '胎'], '台': ['臺', '抬', '胎'], '臺灣': ['台灣'],
     '莉': ['麗', '利', '力', '立', '例'],
@@ -1060,7 +1137,7 @@ function updateShadowMicButtonUI() {
     } else {
         btn.className = 'ac-btn flex items-center gap-1.5 px-4 py-2 rounded-full font-black text-xs md:text-sm bg-gradient-to-b from-orange-400 to-orange-500 text-white border-2 border-white shadow';
         icon.textContent = '🎙️';
-        txt.textContent = t('點此開口跟讀本句 (加分練習)', 'Click to Shadow Read (Bonus)');
+        txt.textContent = t('點此開口跟讀本句', 'Click to Shadow Read Aloud');
     }
 }
 
@@ -1172,7 +1249,6 @@ function evaluateShadowSpeech() {
         playACSound('pop');
     }
 
-    // 重新渲染句子以顯示紅綠逐字比對顏色與星星
     document.getElementById('dlg-text-line').innerHTML = annotateTextWithPhonetics(lineObj.text, currentLesson, charEvalStates);
     updateShadowScoreDisplay(stars, accuracy);
 }
@@ -1198,7 +1274,7 @@ function updateShadowScoreDisplay(stars, accuracy = null) {
         const lineKey = currentLesson ? `${currentLesson.id}:${currentDialogIdx}` : '';
         const savedStars = gameState.shadowStarsByLine[lineKey] || 0;
         starsEl.textContent = '⭐'.repeat(savedStars) + '☆'.repeat(3 - savedStars);
-        badgeEl.textContent = savedStars > 0 ? t(`本句最高紀錄：${savedStars} 顆星`, `Best: ${savedStars} Stars`) : t('尚未跟讀 (自由練習)', 'Not read yet (Optional)');
+        badgeEl.textContent = savedStars > 0 ? t(`本句最高紀錄：${savedStars} 顆星`, `Best: ${savedStars} Stars`) : t('尚未跟讀', 'Not read yet');
         badgeEl.className = 'text-xs font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300';
     }
 }
@@ -1260,10 +1336,10 @@ function toggleBGM() {
     gameState.bgmEnabled = !gameState.bgmEnabled;
     const btn = document.getElementById('btn-bgm-mode');
     if (gameState.bgmEnabled) {
-        if (btn) { btn.textContent = t('🎵 音樂：開', '🎵 BGM: ON'); btn.className = 'ac-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-black text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-amber-700'; }
+        if (btn) { btn.textContent = t('🎵 音樂：開', '🎵 BGM: ON'); btn.className = 'ac-btn w-full bg-amber-500 hover:bg-amber-400 text-amber-950 font-black text-sm py-2.5 rounded-xl border-2 border-amber-700'; }
         startBGM(isPartyBgmMode); showToast(t('🎵 已開啟群島背景音樂！', '🎵 Background music enabled!'));
     } else {
-        if (btn) { btn.textContent = t('🔇 音樂：關', '🔇 BGM: OFF'); btn.className = 'ac-btn bg-gray-500 hover:bg-gray-400 text-white font-black text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-gray-700'; }
+        if (btn) { btn.textContent = t('🔇 音樂：關', '🔇 BGM: OFF'); btn.className = 'ac-btn w-full bg-gray-500 hover:bg-gray-400 text-white font-black text-sm py-2.5 rounded-xl border-2 border-gray-700'; }
         stopBGM(); showToast(t('🔇 已關閉背景音樂', '🔇 Background music muted'));
     }
     saveGameProgress();
@@ -1314,12 +1390,12 @@ function toggleMuteMode() {
     const hudBtn = document.getElementById('btn-mute-mode'), dlgBtn = document.getElementById('dlg-mute-btn');
     if (gameState.isMuted) {
         hudBtn.textContent = t('🔇 語音：靜音', '🔇 Voice: Mute');
-        hudBtn.className = 'ac-btn bg-gray-600 hover:bg-gray-500 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-gray-800';
+        hudBtn.className = 'ac-btn w-full bg-gray-600 hover:bg-gray-500 text-white font-bold text-sm py-2.5 rounded-xl border-2 border-gray-800';
         if (dlgBtn) { dlgBtn.textContent = t('🔇 自動朗讀：關', '🔇 Auto TTS: OFF'); dlgBtn.className = 'ac-btn bg-gray-500 hover:bg-gray-400 text-white font-bold text-xs px-3 py-1.5 rounded-xl'; }
         showToast(t('🔇 已開啟語音靜音模式', '🔇 Voice mute enabled'));
     } else {
         hudBtn.textContent = t('🔊 語音：開', '🔊 Voice: ON');
-        hudBtn.className = 'ac-btn bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-rose-800';
+        hudBtn.className = 'ac-btn w-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm py-2.5 rounded-xl border-2 border-rose-800';
         if (dlgBtn) { dlgBtn.textContent = t('🔊 自動朗讀：開', '🔊 Auto TTS: ON'); dlgBtn.className = 'ac-btn bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs px-3 py-1.5 rounded-xl'; }
         showToast(t('🔊 已開啟語音朗讀！', '🔊 Voice enabled!'));
         if (!document.getElementById('dialog-modal').classList.contains('hidden')) speakCurrentDialogLine();
@@ -1349,7 +1425,6 @@ function showToast(msg) {
     }, 80);
 }
 
-// 📘 登島關卡指引視窗（提示玩家先找主角讀課文）
 const shownStageEntryPromptSet = new Set();
 function showStageEntryGuideModal(lessonId) {
     if (gameState.readLessons.has(lessonId) || shownStageEntryPromptSet.has(lessonId)) return;
@@ -1364,8 +1439,8 @@ function showStageEntryGuideModal(lessonId) {
     document.getElementById('seg-badge').textContent = t(`🏝️ 登陸第 ${lesson.id + 1} 島：${lesson.title}`, `🏝️ Landed on Island #${lesson.id + 1}: ${lesson.title}`);
     document.getElementById('seg-title').textContent = t(`📘 第一步：請先找「${lesson.npcName}」讀課文！`, `📘 Step 1: Read the Lesson with "${lesson.npcName}" First!`);
     document.getElementById('seg-desc').innerHTML = t(
-        `歡迎來到「<strong>${lesson.title}</strong>」小島！<br>請先走上島嶼舞台找主角「<strong class="text-rose-600">${lesson.npcName}</strong>」對話讀完本課課文（對話中還可以點麥克風體驗「🎙️語音跟讀計分」喔）！<br>讀完課文後，島上的夥伴頭上才會出現「❓」讓你回答問題！`,
-        `Welcome to "<strong>${lesson.title}</strong>" Island!<br>Please talk to "<strong class="text-rose-600">${lesson.npcName}</strong>" on the stage to read the lesson first (you can also practice Speech Shadowing with the mic)!<br>Partner quizzes ("❓") will unlock right after reading!`
+        `歡迎來到「<strong>${lesson.title}</strong>」小島！<br>請先走上島嶼舞台找主角「<strong class="text-rose-600">${lesson.npcName}</strong>」對話讀完本課課文（對話中請點麥克風開口跟讀拿星星喔）！<br>讀完課文後，島上的夥伴頭上才會出現「❓」讓你回答問題！`,
+        `Welcome to "<strong>${lesson.title}</strong>" Island!<br>Please talk to "<strong class="text-rose-600">${lesson.npcName}</strong>" on the stage and read the lesson aloud with the mic first!<br>Partner quizzes ("❓") will unlock right after reading!`
     );
     document.getElementById('seg-btn').textContent = t(`📘 好！先去找「${lesson.npcName}」讀課文！`, `📘 Got it! Find "${lesson.npcName}" First!`);
     document.getElementById('stage-entry-guide-modal').classList.remove('hidden');
@@ -1374,7 +1449,6 @@ function closeStageEntryGuideModal() {
     document.getElementById('stage-entry-guide-modal').classList.add('hidden');
 }
 
-// 👕 過關解鎖新款衣服彈窗（Sophia老師語音只在此刻剛過關時說一次！）
 let lastUnlockedOutfitLessonId = null;
 function showNewOutfitUnlockModal(lessonId) {
     const newOutfit = SHOP_OUTFITS.find(o => o.reqLesson === lessonId);
@@ -1383,7 +1457,6 @@ function showNewOutfitUnlockModal(lessonId) {
     gameState.ownedOutfits.add(newOutfit.id);
     saveGameProgress();
 
-    // 標記本關 Sophia 老師已經打過招呼，並只在剛過關這一刻播放一次語音
     if (!window.greetedMerchants) window.greetedMerchants = new Set();
     window.greetedMerchants.add(lessonId);
     speakText('恭喜完成練習！快來換上新衣服或選購傢俱吧！', false, 'Sophia老師');
@@ -1410,16 +1483,19 @@ function closeNewOutfitModal(autoTalkToSophia = false) {
             playerMesh.rotation.y = Math.atan2(info.merchantWorldPos.x - playerMesh.position.x, info.merchantWorldPos.z - playerMesh.position.z);
         }
         playACSound('pop');
-        openShopModal(); // 直接開啟商店，不再重複播放語音
+        openShopModal();
     }
-}function showTask2GuideModal(lessonId) {
+}
+
+function showTask2GuideModal(lessonId) {
     const lesson = LESSONS_DATA.find(l => l.id === lessonId);
     if (!lesson) return;
     playACSound('gem');
+    document.getElementById('t2-modal-badge').textContent = t('✅ 第一任務（回答夥伴問題 3/3）完成！', '✅ Task 1 (Partner Quizzes 3/3) Complete!');
     document.getElementById('t2-modal-title').textContent = t(`🎯 第二任務開啟：收服「${lesson.title}」小島上的生詞小精靈！`, `🎯 Task 2 Unlocked: Catch "${lesson.title}" Vocab Fairies!`);
     document.getElementById('t2-modal-desc').innerHTML = t(
-        `本座小島的草地與沙灘上已經召喚出漫遊的「<strong class="text-sky-700">🧚 生詞小精靈</strong>」（共 ${lesson.vocab.length} 隻）！<br>請走近觸碰牠們並聽完題目作答，收齊本島所有小精靈後，跨海大橋鳥居前就會召喚出第 3 任務「<strong class="text-indigo-700">🖌️ 神來之筆</strong>」喔！`,
-        `Wandering "<strong class="text-sky-700">🧚 Vocab Fairies</strong>" (${lesson.vocab.length} total) have appeared on this island!<br>Approach them, listen to the question, and fill in the blank to summon Task 3 "<strong class="text-indigo-700">🖌️ Magic Brush</strong>" at the Torii Gate!`
+        `本座小島的草地與沙灘上已經召喚出漫遊的「<strong class="text-sky-700">🧚 生詞小精靈</strong>」（共 ${lesson.vocab.length} 隻）！<br>請走近觸碰牠們並聽完題目作答，收齊本島所有小精靈後，跨海大橋鳥居前就會召喚出「<strong class="text-indigo-700">🖌️ 神來之筆</strong>」喔！`,
+        `Wandering "<strong class="text-sky-700">🧚 Vocab Fairies</strong>" (${lesson.vocab.length} total) have appeared on this island!<br>Approach them, listen to the question, and fill in the blank to summon the "<strong class="text-indigo-700">🖌️ Magic Brush</strong>" at the Torii Gate!`
     );
     document.getElementById('t2-modal-btn').textContent = t('🧚 出發在島上收服生詞小精靈！', "🧚 Let's Catch Vocab Fairies!");
     document.getElementById('task2-guide-modal').classList.remove('hidden');
@@ -1485,9 +1561,6 @@ function unlockFinalGateAndGoToParty(shouldTeleport = true) {
     const ninjaOutfit = SHOP_OUTFITS.find(o => o.reqLesson === 12);
     if (ninjaOutfit) {
         gameState.ownedOutfits.add(ninjaOutfit.id);
-        if (shouldTeleport) {
-
-        }
     }
     if (partyGroup) partyGroup.visible = true;
     if (partyFloatingLabel) partyFloatingLabel.innerHTML = `<span class="bg-amber-950/90 text-amber-50 px-2.5 py-0.5 rounded-full text-xs font-bold shadow border border-amber-400">🏆 ${t('第14島：第二冊全破關榮耀金盃島 ＆ 全員歡呼派對！', 'Island #14: Grand Finale Trophy Island & Party!')}</span>`;
@@ -1509,7 +1582,7 @@ function getLessonMissingSummary(lessonId) {
     if (!gameState.readLessons.has(lesson.id)) parts.push(t(`📘先找${lesson.npcName}讀課文`, `Read Lesson first`));
     if (missingQuizzes > 0) parts.push(t(`1️⃣夥伴問題還差 ${missingQuizzes} 題`, `${missingQuizzes} Quizzes left`));
     if (missingGems > 0) parts.push(t(`2️⃣生詞小精靈還差 ${missingGems} 隻`, `${missingGems} Fairies left`));
-    if (missingChars > 0) parts.push(t(`3️⃣鳥居生字挑戰還差 ${missingChars} 字`, `${missingChars} Chars left`));
+    if (missingChars > 0) parts.push(t(`4️⃣鳥居生字挑戰還差 ${missingChars} 字`, `${missingChars} Chars left`));
     return parts.join(t('、', ', '));
 }
 
@@ -1526,48 +1599,30 @@ function updateMissionBanner(targetLessonId) {
     const isTask2Active = (qAnsweredCount === 3) && (gemCount < lesson.vocab.length);
     const isTask3Active = (qAnsweredCount === 3) && (gemCount === lesson.vocab.length) && (doneCount < chars.length);
 
-    document.getElementById('mission-lesson-title').textContent = gameState.uiLang === 'en' ? `Island ${lesson.id + 1} (L${lesson.id})` : lesson.title;
+    document.getElementById('mission-lesson-title').textContent = gameState.uiLang === 'en' ? `Island ${lesson.id + 1} (L${lesson.id})` : tc(lesson.title);
 
-    const rEl = document.getElementById('mission-read-status');
+   const rEl = document.getElementById('mission-read-status');
     if (rEl) {
         rEl.textContent = hasRead ? `📘 ${t('課文已讀✓', 'Read✓')}` : `📘 ${t(`先找${lesson.npcName}讀課文!`, `Read with ${lesson.npcName}!`)}`;
-        rEl.className = `px-2 py-0.5 rounded-full ${hasRead ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-200 text-rose-950 ring-2 ring-rose-500 animate-pulse'}`;
+        rEl.className = `px-2 py-1 rounded-lg text-left truncate ${hasRead ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-200 text-rose-950 ring-2 ring-rose-500 animate-pulse'}`;
     }
 
     const qEl = document.getElementById('mission-quiz-status');
     qEl.textContent = `1️⃣❓ ${t('問題', 'Quiz')} ${qAnsweredCount}/3${qAnsweredCount === 3 ? '✓' : ''}`;
-    qEl.className = `px-2 py-0.5 rounded-full ${qAnsweredCount === 3 ? 'bg-emerald-100 text-emerald-800' : (isTask1Active ? 'bg-purple-200 text-purple-950 ring-2 ring-purple-500 animate-pulse' : 'bg-purple-100 text-purple-800')}`;
+    qEl.className = `px-2 py-1 rounded-lg text-left truncate ${qAnsweredCount === 3 ? 'bg-emerald-100 text-emerald-800' : (isTask1Active ? 'bg-purple-200 text-purple-950 ring-2 ring-purple-500 animate-pulse' : 'bg-purple-100 text-purple-800')}`;
 
     const gEl = document.getElementById('mission-gem-status');
     gEl.textContent = `2️⃣🧚 ${t('生詞', 'Vocab')} ${gemCount}/${lesson.vocab.length}${gemCount === lesson.vocab.length ? '✓' : (isTask2Active ? t(' (進行中!)', ' (Active!)') : '')}`;
-    gEl.className = `px-2 py-0.5 rounded-full ${gemCount === lesson.vocab.length ? 'bg-emerald-100 text-emerald-800' : (isTask2Active ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-600 animate-pulse' : 'bg-amber-100 text-amber-800')}`;
+    gEl.className = `px-2 py-1 rounded-lg text-left truncate ${gemCount === lesson.vocab.length ? 'bg-emerald-100 text-emerald-800' : (isTask2Active ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-600 animate-pulse' : 'bg-amber-100 text-amber-800')}`;
 
     const wEl = document.getElementById('mission-write-status');
     wEl.textContent = `4️⃣🖌️ ${t('鳥居生字', 'Chars')} ${doneCount}/${chars.length}${doneCount === chars.length ? '✓' : (isTask3Active ? t(' (進行中!)', ' (Active!)') : '')}`;
-    wEl.className = `px-2 py-0.5 rounded-full ${doneCount === chars.length ? 'bg-emerald-100 text-emerald-800' : (isTask3Active ? 'bg-blue-200 text-blue-950 ring-2 ring-blue-600 animate-pulse' : 'bg-blue-100 text-blue-800')}`;
+    wEl.className = `px-2 py-1 rounded-lg text-left truncate ${doneCount === chars.length ? 'bg-emerald-100 text-emerald-800' : (isTask3Active ? 'bg-blue-200 text-blue-950 ring-2 ring-blue-600 animate-pulse' : 'bg-blue-100 text-blue-800')}`;
 
     document.getElementById('hud-keys').textContent = `${gameState.unlockedMaxLesson}/12 ${t('島', 'Isl')}`;
 }
 
-function populateTeleportSelect() {
-    const sel = document.getElementById('teleport-select');
-    if (!sel) return;
-    let html = `<option value="" selected disabled>⛵ ${t('跳島傳送門 (共 14 座島嶼)...', 'Island Teleport (14 Islands)...')}</option>` +
-               `<option value="home">🏝️ ${t('第1島(最南)：我的溫馨小屋島 (庭院)', 'Island #1 (South): Cabin Island')}</option>` +
-               `<option value="home_inside">🛋️ ${t('進入我的溫馨小屋 (室內房間)', 'Inside My Cabin (Indoor Room)')}</option>`;
-    if (gameState.completedLessons.has(12)) html += `<option value="trophy_party">🏆 ${t('第14島(最北)：榮耀金盃派對島', 'Island #14 (North): Trophy Party Island')}</option>`;
-    sel.innerHTML = html;
-    LESSONS_DATA.forEach(lesson => {
-        const unlocked = lesson.id <= gameState.unlockedMaxLesson;
-        const done = gameState.completedLessons.has(lesson.id);
-        const opt = document.createElement('option');
-        opt.value = `lesson_${lesson.id}`; opt.disabled = !unlocked;
-        const islNum = lesson.id + 1;
-        opt.textContent = `${unlocked ? (done ? '✅' : '🏝️') : '🔒'} ${t(`第${islNum}島`, `Isl #${islNum}`)}・${lesson.title}${unlocked ? '' : t(' (需前島過關)', ' (Locked)')}`;
-        sel.appendChild(opt);
-    });
-    sel.selectedIndex = 0;
-}
+function populateTeleportSelect() {}
 
 let scene, camera, renderer, outdoorGroup, indoorGroup, outdoorFurnitureGroup, indoorFurnitureGroup, vocabGemsGroup;
 let oceanMesh = null, partyGroup = null, partyFloatingLabel = null, playerMesh, petMesh, trophyStarMesh = null, mouseTargetRing = null;
@@ -1650,38 +1705,28 @@ function createSeaBridge(x, zStart, zEnd, width = 6.2) {
     return grp;
 }
 
-const HOME_ISLAND_X = 12.5; // 小屋島整體往右移至 X = +12.5，完全不擋中央大道視線！
+const HOME_ISLAND_X = 12.5;
 
 function isWalkableOutdoorPosition(x, z) {
-    // 1. 中央跨海大橋走廊 (嚴格限制在木橋欄杆內 X: -2.6 ~ +2.6)
     if (Math.abs(x) <= 2.6 && z >= -368 && z <= 14.5) return true;
-    // 2. 中央橋頭出發樞紐小島 (X: -4.2 ~ +4.2, Z: 7.8 ~ 16.2)
     if (x >= -4.2 && x <= 4.2 && z >= 7.8 && z <= 16.2) return true;
-    // 3. 連接中央樞紐島與右側第1島(小屋島)的橫向木棧橋 (嚴格限制在橋面 Z: 10.1 ~ 13.9)
     if (z >= 10.1 && z <= 13.9 && x >= -2.6 && x <= 14.0) return true;
-    // 4. 第 1 島（最南端右側 X=12.5）：我的溫馨小屋島陸地 (X: 1.2 ~ 23.8, Z: 0.5 ~ 23.8)
     if (x >= 1.2 && x <= 23.8 && z >= 0.5 && z <= 23.8) return true;
-    // 5. 第 14 島（最北端）：終點榮耀金盃派對島
     if (z >= -372.0 && z <= -347.5 && Math.abs(x) <= 12.5) return true;
-    // 6. 第 2 ~ 13 島：第一課 ~ 第十二課關卡島與橫向木棧橋
     for (let i = 0; i < LESSONS_DATA.length; i++) {
         const l = LESSONS_DATA[i];
         const z0 = l.position.z;
         const side = (l.id % 2 === 1) ? -1 : 1;
-        // 中央橋頭小礁島
         if (Math.abs(z - z0) <= 4.8 && Math.abs(x) <= 4.5) return true;
-        // 橫向連接木棧橋 (嚴格限制在橋面寬度內，不讓角色斜切走入海水)
         if (Math.abs(z - z0) <= 2.1) {
             if (side === -1 && x >= -14.0 && x <= 2.6) return true;
             if (side === 1 && x >= -2.6 && x <= 14.0) return true;
         }
-        // 課程主島嶼陸地範圍
         if (Math.abs(z - z0) <= 8.4) {
             if (side === -1 && x >= -21.8 && x <= -3.2) return true;
             if (side === 1 && x >= 3.2 && x <= 21.8) return true;
         }
     }
-    // 7. 跨海大橋鳥居平台礁島
     for (let i = 0; i < LESSONS_DATA.length; i++) {
         const gateZ = LESSONS_DATA[i].position.z - 12.5;
         if (Math.abs(z - gateZ) <= 2.4 && Math.abs(x) <= 4.5) return true;
@@ -4380,6 +4425,9 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+// 🚫 防止按滑鼠右鍵或平板長按彈出選單
+window.addEventListener('contextmenu', (e) => e.preventDefault());
+
 window.addEventListener('keydown', (e) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Escape'].includes(e.code)) {
         if (document.activeElement && document.activeElement.tagName === 'SELECT') document.activeElement.blur();
@@ -4903,16 +4951,15 @@ updateMissionBanner = function(targetLessonId) {
     if (rEl) {
         const allRead = (st.passedLines === st.totalLines) || gameState.readLessons.has(lesson.id);
         rEl.textContent = `0️⃣🎙️ ${t('念課文', 'Read')} ${st.passedLines}/${st.totalLines}${allRead ? '✓' : ''}`;
-        rEl.className = `px-2 py-0.5 rounded-full ${allRead ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-200 text-rose-950 ring-2 ring-rose-500 animate-pulse'}`;
+        rEl.className = `px-2 py-1 rounded-lg text-left truncate ${allRead ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-200 text-rose-950 ring-2 ring-rose-500 animate-pulse'}`;
     }
     const pSt = getLessonPuzzleStats(lesson.id);
     const cEl = document.getElementById('mission-chest-status');
     if (cEl) {
         cEl.textContent = `3️⃣🧩 ${t('句型', 'Puzzle')} ${pSt.solvedCount}/${pSt.totalCount}${pSt.allSolved ? '✓' : ''}`;
-        cEl.className = `px-2 py-0.5 rounded-full cursor-pointer ${pSt.allSolved ? 'bg-emerald-100 text-emerald-800' : 'bg-teal-100 text-teal-900 border border-teal-400 hover:bg-teal-200'}`;
+        cEl.className = `px-2 py-1 rounded-lg text-left truncate cursor-pointer ${pSt.allSolved ? 'bg-emerald-100 text-emerald-800' : 'bg-teal-100 text-teal-900 border border-teal-400 hover:bg-teal-200'}`;
     }
 };
-
 const _origShowMissingModal = showMissingConditionsModal;
 showMissingConditionsModal = function(lessonId, fromWritingComplete = false) {
     _origShowMissingModal(lessonId, fromWritingComplete);
@@ -5543,6 +5590,10 @@ window.triggerPhotoMode = function() {
     const topHud = document.querySelector('.fixed.top-2');
     const bottomHud = document.querySelector('.fixed.bottom-4');
     const minimap = document.getElementById('island-minimap');
+const leftMission = document.getElementById('hud-stage-mission');
+if (leftMission) leftMission.style.opacity = '0';
+// 並在 4200ms 的 setTimeout 裡加上：
+if (leftMission) leftMission.style.opacity = '1';
     const promptEl = document.getElementById('interaction-prompt');
     if (topHud) topHud.style.opacity = '0';
     if (bottomHud) bottomHud.style.opacity = '0';
@@ -5558,6 +5609,8 @@ window.triggerPhotoMode = function() {
         if (minimap) minimap.style.opacity = '1';
         if (promptEl) promptEl.style.opacity = '1';
     }, 4200);
+
+
 };
 
 // --- 優化 4：👩‍🏫 教師課堂展示模式（密碼 8888 一鍵解鎖全島嶼與金幣） ---
@@ -5614,7 +5667,38 @@ window.addEventListener('load', () => {
         }
     }, 400);
 });
+// ⛶ 全螢幕切換功能（支援跨瀏覽器與平板）
+window.toggleFullScreen = function() {
+    playACSound('pop');
+    const doc = window.document;
+    const docEl = doc.documentElement;
 
+    const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+        if (requestFullScreen) {
+            requestFullScreen.call(docEl).catch(() => {
+                showToast(t('💡 您的裝置或瀏覽器限制全螢幕（iPad 可點網址列「大小」隱藏工具列）', '💡 Fullscreen restricted by browser'));
+            });
+        } else {
+            showToast(t('💡 您的裝置不支援自動全螢幕，可加入主畫面開啟喔！', '💡 Add to Home Screen for fullscreen on iOS!'));
+        }
+    } else {
+        if (cancelFullScreen) cancelFullScreen.call(doc);
+    }
+};
+
+// 監聽全螢幕狀態改變以更新按鈕文字
+function updateFullscreenButtonUI() {
+    const isFull = Boolean(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    const btn = document.getElementById('ui-btn-fullscreen');
+    if (btn) {
+        btn.textContent = isFull ? t('🗗 退出全螢幕', '🗗 Exit Full') : t('⛶ 全螢幕', '⛶ Fullscreen');
+    }
+}
+document.addEventListener('fullscreenchange', updateFullscreenButtonUI);
+document.addEventListener('webkitfullscreenchange', updateFullscreenButtonUI);
 window.onload = function() {
     try {
         const hasSave = loadGameProgress();
