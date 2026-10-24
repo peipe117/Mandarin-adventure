@@ -738,7 +738,7 @@ const SAVE_STORAGE_KEY = 'mandarin_adventure_book2_save_v1';
 
 const gameState = {
     playerName: "小華", playerGender: 'boy', level: 1, exp: 0, points: 120,
-    uiLang: 'zh', bgmEnabled: true, isMuted: false, phoneticMode: 'zhuyin', showEnglish: true, isInsideCabin: false,
+    uiLang: 'en', bgmEnabled: true, isMuted: false, phoneticMode: 'zhuyin', showEnglish: true, isInsideCabin: false,
     unlockedMaxLesson: 1, readLessons: new Set(), collectedVocab: new Set(), writtenChars: new Set(),
     answeredQuizItems: new Set(), completedQuizzes: new Set(), completedLessons: new Set(),
     ownedFurniture: new Set(), placedFurniture: new Set(),
@@ -1620,7 +1620,7 @@ function updateMissionBanner(targetLessonId) {
     gEl.className = `px-2 py-1 rounded-lg text-left truncate ${gemCount === lesson.vocab.length ? 'bg-emerald-100 text-emerald-800' : (isTask2Active ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-600 animate-pulse' : 'bg-amber-100 text-amber-800')}`;
 
     const wEl = document.getElementById('mission-write-status');
-    wEl.textContent = `4️⃣🖌️ ${t('鳥居生字', 'Chars')} ${doneCount}/${chars.length}${doneCount === chars.length ? '✓' : (isTask3Active ? t(' (進行中!)', ' (Active!)') : '')}`;
+    wEl.textContent = `4️⃣🖌️ ${t('生字', 'Chars')} ${doneCount}/${chars.length}${doneCount === chars.length ? '✓' : (isTask3Active ? t(' (進行中!)', ' (Active!)') : '')}`;
     wEl.className = `px-2 py-1 rounded-lg text-left truncate ${doneCount === chars.length ? 'bg-emerald-100 text-emerald-800' : (isTask3Active ? 'bg-blue-200 text-blue-950 ring-2 ring-blue-600 animate-pulse' : 'bg-blue-100 text-blue-800')}`;
 
     document.getElementById('hud-keys').textContent = `${gameState.unlockedMaxLesson}/12 ${t('島', 'Isl')}`;
