@@ -122,8 +122,9 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     </div>
 </div>
 
-<!-- 🎯 新增：畫面左側直立式「本島任務進度條」（位於左上狀態列與左下方向鍵之間） -->
-<div id="hud-stage-mission" class="fixed left-2 top-16 z-20 ac-panel p-2 flex flex-col items-stretch gap-1.5 pointer-events-auto bg-amber-50/95 text-xs font-bold text-amber-900 w-36 md:w-40 shadow-xl">
+
+<!-- 🎯 畫面左側直立式「本島任務進度條」（手機直向高度改為 top-28，完美避開折行的圖鑑按鈕） -->
+<div id="hud-stage-mission" class="fixed left-2 top-28 md:top-20 z-20 ac-panel p-2 flex flex-col items-stretch gap-1.5 pointer-events-auto bg-amber-50/95 text-xs font-bold text-amber-900 w-36 md:w-40 shadow-xl">
     <div class="text-[11px] font-black text-amber-950 bg-amber-300 px-2 py-1 rounded-lg border border-amber-600 text-center leading-tight">
         🎯 <span id="ui-mission-prefix">本島順序</span><br>
         <strong id="mission-lesson-title" class="text-xs text-rose-800">第一課</strong>
@@ -147,8 +148,8 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     </div>
 </div>
 
-<!-- 🗺️ 畫面右側直立式「14島闖關進度條 / 傳送門」 -->
-<div id="island-minimap" class="fixed right-2 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center bg-amber-50/95 backdrop-blur-sm border-3 border-amber-700 rounded-2xl p-1.5 shadow-xl pointer-events-auto max-h-[76vh] overflow-y-auto gap-1">
+<!-- 🗺️ 畫面右側「14島闖關進度條」（手機直向稍微往下靠，不碰頂部按鈕） -->
+<div id="island-minimap" class="fixed right-2 top-[56%] md:top-1/2 -translate-y-1/2 z-20 flex flex-col items-center bg-amber-50/95 backdrop-blur-sm border-3 border-amber-700 rounded-2xl p-1.5 shadow-xl pointer-events-auto max-h-[62vh] md:max-h-[76vh] overflow-y-auto gap-1">
     <div id="ui-minimap-title" class="text-[10px] font-black text-amber-950 bg-amber-300 px-1.5 py-0.5 rounded-md border border-amber-600 whitespace-nowrap">🗺️ 闖關進度</div>
     <div id="minimap-nodes" class="flex flex-col items-center gap-1"></div>
 </div>
@@ -341,16 +342,19 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
 
 <!-- Vocabulary Inspector Popup Card -->
 <div id="vocab-popup" onclick="handleVocabPopupBackdropClick()" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/55 p-3 md:p-4 cursor-pointer">
-    <div class="ac-panel max-w-lg w-full p-5 md:p-6 relative text-center cursor-pointer max-h-[92vh] overflow-y-auto">
+    <!-- 加入 onclick="event.stopPropagation()" 與 cursor-default，防止點擊翻頁按鈕時誤觸關閉 -->
+    <div onclick="event.stopPropagation()" class="ac-panel max-w-lg w-full p-5 md:p-6 relative text-center cursor-default max-h-[92vh] overflow-y-auto">
         <div id="vp-capture-banner" class="hidden bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 font-black text-xs px-3.5 py-1 rounded-full mb-2 shadow inline-block">🧚 遭遇野生「生詞小精靈」！先看熟這張字卡，再點下方按鈕答題收服牠！</div>
         <div id="vp-preview-banner" class="hidden bg-sky-100 text-sky-900 font-bold text-xs px-3 py-1 rounded-full mb-2 inline-block">📖 生詞與生字詳解卡（支援 ◀ ▶ 切換上下頁）</div>
         <div><div class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-0.5 rounded-full mb-1" id="vp-pos">名詞</div></div>
+        
+        <!-- ◀ ▶ 切換按鈕加大到 w-11 h-11，手機點擊更靈敏 -->
         <div class="flex items-center justify-between gap-2 my-1">
-            <button id="vp-prev-btn" onclick="event.stopPropagation(); navigateVocabCard(-1)" class="ac-btn w-10 h-10 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-lg flex items-center justify-center">◀</button>
+            <button type="button" id="vp-prev-btn" onclick="event.stopPropagation(); window.navigateVocabCard(-1)" class="ac-btn w-11 h-11 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-xl flex items-center justify-center shadow">◀</button>
             <h2 id="vp-word" class="text-4xl font-black text-amber-950 mx-auto">新同學</h2>
-            <button id="vp-next-btn" onclick="event.stopPropagation(); navigateVocabCard(1)" class="ac-btn w-10 h-10 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-lg flex items-center justify-center">▶</button>
+            <button type="button" id="vp-next-btn" onclick="event.stopPropagation(); window.navigateVocabCard(1)" class="ac-btn w-11 h-11 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-xl flex items-center justify-center shadow">▶</button>
         </div>
-        <div class="flex items-center justify-center gap-3 mb-2">
+        <!-- 保持其餘內部內容不變 -->        <div class="flex items-center justify-center gap-3 mb-2">
             <span id="vp-zhuyin" class="bg-sky-100 text-sky-900 font-bold px-3 py-1 rounded-lg text-sm">ㄒㄧㄣ ㄊㄨㄥˊ ㄒㄩㄝˊ</span>
             <span id="vp-pinyin" class="bg-indigo-100 text-indigo-900 font-bold px-3 py-1 rounded-lg text-sm">xīn tóng xué</span>
         </div>
@@ -3703,28 +3707,82 @@ function toggleEnglishMode() {
     if (!document.getElementById('dialog-modal').classList.contains('hidden')) renderDialogLine();
 }
 
-function inspectSingleCharCard(lessonId, ch) {
+// 📖 查看單一必寫生字卡
+window.inspectSingleCharCard = function(lessonId, ch) {
     const lesson = LESSONS_DATA.find(l => l.id === lessonId) || LESSONS_DATA[0];
     const charsList = Array.from(lesson.writeChars);
-    const charIdx = Math.max(0, charsList.indexOf(ch));
+    let charIdx = charsList.indexOf(ch);
+    if (charIdx === -1) charIdx = 0;
     const targetChar = charsList[charIdx] || ch;
     const cInfo = charDatabase[targetChar];
     const ph = cInfo ? { zhuyin: cInfo.zh, pinyin: cInfo.py } : getCharPhonetics(targetChar);
     const sentObj = getSentenceForCharacter(targetChar, lessonId);
 
-    currentVocabItem = { cardType: 'char', lessonId, charIndex: charIdx, canNavigate: true, isPreCapture: false, word: targetChar, zhuyin: ph.zhuyin, pinyin: ph.pinyin, pos: t('必寫生字', 'Character'), en: cInfo ? cInfo.en : sentObj.en, ex: sentObj.sentence };
-    document.getElementById('vp-prev-btn').classList.remove('hidden'); document.getElementById('vp-next-btn').classList.remove('hidden');
-    document.getElementById('vp-capture-banner').classList.add('hidden'); document.getElementById('vp-preview-banner').classList.remove('hidden');
+    currentVocabItem = {
+        cardType: 'char',
+        lessonId: lesson.id,
+        charIndex: charIdx,
+        canNavigate: true,
+        isPreCapture: false,
+        word: targetChar,
+        zhuyin: ph.zhuyin,
+        pinyin: ph.pinyin,
+        pos: t('必寫生字', 'Character'),
+        en: cInfo ? cInfo.en : sentObj.en,
+        ex: sentObj.sentence
+    };
+
+    const prevBtn = document.getElementById('vp-prev-btn');
+    const nextBtn = document.getElementById('vp-next-btn');
+    if (prevBtn) prevBtn.classList.remove('hidden');
+    if (nextBtn) nextBtn.classList.remove('hidden');
+
+    document.getElementById('vp-capture-banner').classList.add('hidden');
+    document.getElementById('vp-preview-banner').classList.remove('hidden');
     document.getElementById('vp-start-quiz-btn').classList.add('hidden');
     document.getElementById('ui-vp-close-hint').textContent = t('💡 可按 ◀ ▶ 切換本課生字，或點擊空白處 / 按 Space 關閉', '💡 Use ◀ ▶ to switch characters, or click outside / press Space to close');
     document.getElementById('vp-pos').textContent = `${lesson.title} (${charIdx + 1}/${charsList.length})・${t('必寫生字卡', 'Character Card')}`;
     document.getElementById('vp-word').textContent = tc(targetChar);
-    document.getElementById('vp-zhuyin').textContent = ph.zhuyin; document.getElementById('vp-pinyin').textContent = ph.pinyin;
-    document.getElementById('vp-en').textContent = cInfo ? cInfo.en : ''; document.getElementById('vp-example').textContent = tc(sentObj.sentence);
+    document.getElementById('vp-zhuyin').textContent = ph.zhuyin;
+    document.getElementById('vp-pinyin').textContent = ph.pinyin;
+    document.getElementById('vp-en').textContent = cInfo ? cInfo.en : '';
+    document.getElementById('vp-example').textContent = tc(sentObj.sentence);
+
     const charDetailsEl = document.getElementById('vp-char-details');
-    charDetailsEl.innerHTML = buildCharDetailsHTML([targetChar], lessonId, false); charDetailsEl.classList.remove('hidden');
+    charDetailsEl.innerHTML = buildCharDetailsHTML([targetChar], lessonId, false);
+    charDetailsEl.classList.remove('hidden');
+
     document.getElementById('vocab-popup').classList.remove('hidden');
     speakText(targetChar, false);
+};
+
+// 🔄 支援生字卡 (char) 與生詞卡 (vocab) 循環前後翻頁
+window.navigateVocabCard = function(dir) {
+    if (!currentVocabItem || !currentVocabItem.canNavigate) return;
+    const lesson = LESSONS_DATA.find(l => l.id === currentVocabItem.lessonId);
+    if (!lesson) return;
+    playACSound('pop');
+
+    if (currentVocabItem.cardType === 'char') {
+        const charsList = Array.from(lesson.writeChars);
+        let curIdx = charsList.indexOf(currentVocabItem.word);
+        if (curIdx === -1) curIdx = currentVocabItem.charIndex || 0;
+        const nextCharIdx = (curIdx + dir + charsList.length) % charsList.length;
+        window.inspectSingleCharCard(lesson.id, charsList[nextCharIdx]);
+    } else {
+        let curIdx = currentVocabItem.vocabIndex;
+        if (curIdx === undefined || curIdx === -1) {
+            curIdx = lesson.vocab.findIndex(v => v.word === currentVocabItem.word);
+            if (curIdx === -1) curIdx = 0;
+        }
+        const nextIdx = (curIdx + dir + lesson.vocab.length) % lesson.vocab.length;
+        inspectVocab(lesson.id, lesson.vocab[nextIdx].word, false);
+    }
+};
+
+// 讓 HTML 按鈕上的 navigateVocabCard(-1) 與 window.navigateVocabCard(-1) 都能正確呼叫
+function navigateVocabCard(dir) {
+    window.navigateVocabCard(dir);
 }
 
 function inspectVocab(lessonId, word, mode = false) {
@@ -3896,10 +3954,11 @@ function initWritingCanvasEvents() {
     window.addEventListener('mouseup', endDraw);
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
     canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveDraw(e); }, { passive: false });
-    canvas.addEventListener('touchend', endDraw);
+canvas.addEventListener('touchend', endDraw);
 }
 
-function openWritingChallengeModal(lessonId, practiceCharsArray = null) {
+function openWritingChallengeModal(lessonId, practiceCharsArray = null, startChar = null) {
+    if (startChar) currentWritingChar = startChar;
     mouseWalkTarget = null;
     currentWritingLessonId = lessonId || gameState.unlockedMaxLesson;
     const lesson = LESSONS_DATA.find(l => l.id === currentWritingLessonId) || LESSONS_DATA[0];
@@ -4215,8 +4274,8 @@ function renderVocabBook() {
                     <div class="text-[10px] font-bold text-slate-600">${cInfo ? (cInfo.words || []).join('、') : ''}</div>
                 </div>
             </div>
-            ${writingUnlocked
-                ? `<button type="button" onclick="event.stopPropagation(); closeVocabBook(); openWritingChallengeModal(${lesson.id}, ['${ch}']);" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-xs font-black px-2 py-1 rounded-lg">✍️</button>`
+${writingUnlocked
+                ? `<button type="button" onclick="event.stopPropagation(); closeVocabBook(); openWritingChallengeModal(${lesson.id}, Array.from('${lesson.writeChars}'), '${ch}');" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-xs font-black px-2 py-1 rounded-lg">✍️</button>`
                 : `<span class="text-xs opacity-50">🔒</span>`
             }
         </div>`;
