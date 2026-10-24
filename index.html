@@ -4844,42 +4844,199 @@ isAnyModalOpen = function() {
            !document.getElementById('certificate-modal').classList.contains('hidden');
 };
 
-function renderSentencePuzzleUI() {
+// 🧩 全方位強化版：支援「滑鼠 + 平板/手機觸控拖曳插隊 + 點擊退回」的句型排卡引擎
+let spDragGhost = null;
+
+// 計算拖放插入點（支援多行自動計算插在第幾個位置）
+function getPuzzleInsertIndex(container, x, y) {
+    const buttons = Array.from(container.querySelectorAll('button[data-slot-idx], button[data-bank-idx]'));
+    if (buttons.length === 0) return 0;
+
+    for (let i = 0; i < buttons.length; i++) {
+        const r = buttons[i].getBoundingClientRect();
+        // 若指標在該行上方，插在該行第一個
+        if (y < r.top) return i;
+        // 若指標在該行內（上下給予寬容度）
+        if (y <= r.bottom + 16) {
+            const midX = r.left + r.width / 2;
+            if (x < midX) return i;
+            // 如果這是該行的最後一個元素，或整體最後一個
+            if (i === buttons.length - 1) return buttons.length;
+            const nextR = buttons[i + 1].getBoundingClientRect();
+            if (nextR.top > r.bottom) return i + 1; // 下一個按鈕已換行
+        }
+    }
+    return buttons.length;
+}
+
+function attachPuzzleCardDragAndTap(btn, sourceType, index, word) {
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let isDragging = false;
+    let activePointerId = null;
+
+    const onMove = (ev) => {
+        if (ev.pointerId !== activePointerId) return;
+        currentX = ev.clientX;
+        currentY = ev.clientY;
+        const dx = currentX - startX;
+        const dy = currentY - startY;
+
+        // 超過 6px 判定為拖曳開始
+        if (!isDragging && Math.hypot(dx, dy) > 6) {
+            isDragging = true;
+            btn.classList.add('opacity-25', 'scale-95');
+
+            // 建立跟隨滑鼠/手指的懸浮詞卡
+            if (!spDragGhost) {
+                spDragGhost = document.createElement('div');
+                spDragGhost.style.pointerEvents = 'none'; // 避免擋住 elementFromPoint 判定
+                spDragGhost.style.position = 'fixed';
+                spDragGhost.style.zIndex = '9999';
+                spDragGhost.className = 'bg-amber-300 text-amber-950 font-black px-3.5 py-2 rounded-xl border-2 border-amber-800 shadow-2xl text-base scale-110 -translate-x-1/2 -translate-y-1/2';
+                spDragGhost.textContent = tc(word);
+                document.body.appendChild(spDragGhost);
+            }
+        }
+
+        if (isDragging && spDragGhost) {
+            spDragGhost.style.left = `${currentX}px`;
+            spDragGhost.style.top = `${currentY}px`;
+        }
+    };
+
+    const onUp = (ev) => {
+        if (ev.pointerId !== activePointerId) return;
+
+        // 移除監聽與釋放指標鎖定
+        try { btn.releasePointerCapture(activePointerId); } catch (e) {}
+        btn.removeEventListener('pointermove', onMove);
+        btn.removeEventListener('pointerup', onUp);
+        btn.removeEventListener('pointercancel', onUp);
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+
+        if (spDragGhost) {
+            spDragGhost.remove();
+            spDragGhost = null;
+        }
+        btn.classList.remove('opacity-25', 'scale-95');
+
+        // 【情況 A】輕點一下（無明顯拖動）➔ 維持原本直覺的點擊移入或退回
+        if (!isDragging) {
+            playACSound('pop');
+            if (sourceType === 'bank') {
+                currentPuzzleSelected.push(word);
+                currentPuzzlePool.splice(index, 1);
+            } else {
+                currentPuzzlePool.push(word);
+                currentPuzzleSelected.splice(index, 1);
+            }
+            renderSentencePuzzleUI();
+            return;
+        }
+
+        // 【情況 B】拖曳放開 ➔ 透過坐標與 elementFromPoint 雙重判定目標容器
+        const dropX = (ev.clientX !== undefined && ev.clientX !== 0) ? ev.clientX : currentX;
+        const dropY = (ev.clientY !== undefined && ev.clientY !== 0) ? ev.clientY : currentY;
+
+        const slotsEl = document.getElementById('sp-answer-slots');
+        const bankEl = document.getElementById('sp-word-bank');
+        const slotsRect = slotsEl.getBoundingClientRect();
+        const bankRect = bankEl.getBoundingClientRect();
+
+        const elemUnder = document.elementFromPoint(dropX, dropY);
+        const inSlots = Boolean(elemUnder && elemUnder.closest('#sp-answer-slots')) ||
+            (dropY >= slotsRect.top - 20 && dropY <= slotsRect.bottom + 20 && dropX >= slotsRect.left - 20 && dropX <= slotsRect.right + 20);
+        const inBank = Boolean(elemUnder && elemUnder.closest('#sp-word-bank')) ||
+            (dropY >= bankRect.top - 20 && dropY <= bankRect.bottom + 30 && dropX >= bankRect.left - 20 && dropX <= bankRect.right + 20);
+
+        playACSound('pop');
+
+        if (inSlots) {
+            const targetIdx = getPuzzleInsertIndex(slotsEl, dropX, dropY);
+            if (sourceType === 'bank') {
+                // 從詞庫拖入上方答案區
+                currentPuzzlePool.splice(index, 1);
+                currentPuzzleSelected.splice(targetIdx, 0, word);
+            } else {
+                // 在答案區內左右插隊重排順序
+                const item = currentPuzzleSelected.splice(index, 1)[0];
+                const realInsertIdx = (index < targetIdx) ? (targetIdx - 1) : targetIdx;
+                currentPuzzleSelected.splice(realInsertIdx, 0, item);
+            }
+        } else if (inBank) {
+            const targetIdx = getPuzzleInsertIndex(bankEl, dropX, dropY);
+            if (sourceType === 'slots') {
+                // 從答案區拖回下方詞庫退回
+                currentPuzzleSelected.splice(index, 1);
+                currentPuzzlePool.splice(targetIdx, 0, word);
+            } else {
+                // 在下方詞庫內自己排順序
+                const item = currentPuzzlePool.splice(index, 1)[0];
+                const realInsertIdx = (index < targetIdx) ? (targetIdx - 1) : targetIdx;
+                currentPuzzlePool.splice(realInsertIdx, 0, item);
+            }
+        }
+
+        renderSentencePuzzleUI();
+    };
+
+    btn.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        e.stopPropagation();
+        activePointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        currentX = e.clientX;
+        currentY = e.clientY;
+        isDragging = false;
+
+        // 鎖定指標，確保手指或滑鼠移出按鈕時依然能持續監聽移動與釋放
+        try { btn.setPointerCapture(activePointerId); } catch (err) {}
+
+        btn.addEventListener('pointermove', onMove);
+        btn.addEventListener('pointerup', onUp);
+        btn.addEventListener('pointercancel', onUp);
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+    });
+}function renderSentencePuzzleUI() {
     const slotsEl = document.getElementById('sp-answer-slots');
     const bankEl = document.getElementById('sp-word-bank');
     if (!slotsEl || !bankEl) return;
     slotsEl.innerHTML = '';
     bankEl.innerHTML = '';
 
+    // 提示標籤（當答案區為空時顯示虛線引導）
+    if (currentPuzzleSelected.length === 0) {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'text-xs font-bold text-amber-700/60 pointer-events-none select-none';
+        placeholder.textContent = t('✨ 請將下方詞卡「拖拉」或「點擊」排入此處（排好後也可左右拖拉調整順序）', '✨ Drag or tap word cards here (drag left/right to reorder)');
+        slotsEl.appendChild(placeholder);
+    }
+
     currentPuzzleSelected.forEach((w, idx) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'ac-btn bg-amber-400 text-amber-950 font-black px-3 py-1.5 rounded-xl border-2 border-amber-700 text-base';
+        b.dataset.slotIdx = idx;
+        b.style.touchAction = 'none'; // 防止 iPad/手機拖拉詞卡時畫面跟著上下捲動
+        b.className = 'ac-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-black px-3 py-1.5 rounded-xl border-2 border-amber-700 text-base cursor-grab active:cursor-grabbing select-none';
         b.textContent = tc(w);
-        b.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            playACSound('pop');
-            currentPuzzlePool.push(w);
-            currentPuzzleSelected.splice(idx, 1);
-            renderSentencePuzzleUI();
-        };
+        attachPuzzleCardDragAndTap(b, 'slots', idx, w);
         slotsEl.appendChild(b);
     });
 
     currentPuzzlePool.forEach((w, idx) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'ac-btn bg-white hover:bg-teal-50 text-teal-950 font-black px-3 py-1.5 rounded-xl border-2 border-teal-500 text-base';
+        b.dataset.bankIdx = idx;
+        b.style.touchAction = 'none';
+        b.className = 'ac-btn bg-white hover:bg-teal-50 text-teal-950 font-black px-3 py-1.5 rounded-xl border-2 border-teal-500 text-base cursor-grab active:cursor-grabbing select-none';
         b.textContent = tc(w);
-        b.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            playACSound('pop');
-            currentPuzzleSelected.push(w);
-            currentPuzzlePool.splice(idx, 1);
-            renderSentencePuzzleUI();
-        };
+        attachPuzzleCardDragAndTap(b, 'bank', idx, w);
         bankEl.appendChild(b);
     });
 }
