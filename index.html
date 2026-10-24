@@ -111,19 +111,18 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
             <span>🏝️</span><span id="hud-keys" class="font-black text-amber-900 text-xs">1/12 島</span>
         </div>
     </div>
-
-    <!-- 隱藏的任務佔位區，讓原有 JS 更新函式不會因找不到 ID 而當機 -->
+<!-- 隱藏的任務佔位區，讓原有 JS 更新函式不會因找不到 ID 而當機 -->
     <div id="hud-stage-mission" class="hidden">
         <span id="ui-mission-prefix"></span><strong id="mission-lesson-title"></strong>
         <span id="mission-read-status"></span><span id="mission-quiz-status"></span>
         <span id="mission-gem-status"></span><span id="mission-chest-status"></span><span id="mission-write-status"></span>
     </div>
 
-    <!-- 右上：下拉式傳送門、圖鑑、證書、全螢幕、設定 -->
+    <!-- 右上：下拉式傳送門、圖鑑、證書、全螢幕、設定（補回外層 div 讓按鈕靠右且可點擊下拉） -->
     <div class="flex flex-wrap items-center gap-1.5 pointer-events-auto">
-        <!-- ⛵ 下拉式跳島傳送門 -->
+        <!-- ⛵ 下拉式跳島傳送門（僅縮短外框寬度，保留完整島名） -->
         <select id="teleport-select" onchange="teleportToZone(this.value); this.blur();"
-            class="ac-btn bg-white border-2 border-amber-700 text-amber-950 font-black text-xs md:text-sm rounded-xl px-2.5 py-1.5 cursor-pointer focus:outline-none max-w-[165px] sm:max-w-[220px] truncate">
+            class="ac-btn bg-white border-2 border-amber-700 text-amber-950 font-black text-xs md:text-sm rounded-xl px-2 py-1.5 cursor-pointer focus:outline-none w-28 sm:w-32 truncate">
             <option value="" selected disabled>⛵ 跳島傳送門...</option>
         </select>
 
@@ -145,17 +144,6 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
         <button onclick="openSettingsModal()" id="ui-btn-settings-top" class="ac-btn bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-slate-900">⚙️ 設定</button>
     </div>
 </div>
-        <!-- 📜 證書 -->
-        <button onclick="openCertificateModal()" id="ui-btn-cert-top" class="ac-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-amber-700" title="查看學習歷程結業證書">📜 證書</button>
-
-        <!-- ⛶ 全螢幕 -->
-        <button onclick="toggleFullScreen()" id="ui-btn-fullscreen" class="ac-btn bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs md:text-sm px-2.5 py-1.5 rounded-xl border-2 border-sky-800" title="切換全螢幕模式">⛶ 全螢幕</button>
-
-        <!-- ⚙️ 設定 -->
-        <button onclick="openSettingsModal()" id="ui-btn-settings-top" class="ac-btn bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs md:text-sm px-3 py-1.5 rounded-xl border-2 border-slate-900">⚙️ 設定</button>
-    </div>
-</div>
-
 
 <!-- 📘 進入關卡島嶼時：指示玩家「先找人物讀課文」提示彈窗 -->
 <div id="stage-entry-guide-modal" onclick="closeStageEntryGuideModal()" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/55 backdrop-blur-sm p-4 pointer-events-auto cursor-pointer">
