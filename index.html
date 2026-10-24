@@ -2285,7 +2285,7 @@ function checkGemChallengeAnswer(isCorrect, chosenText) {
                 checkAndUnlockLessonGate(lid);
 
                 // 答對收服後，彈出這張生詞詳解卡讓學生複習字義與造句！
-                inspectVocab(lid, capturedWord, false);
+                inspectVocab(lid, capturedWord, false, false);
                 const previewBanner = document.getElementById('vp-preview-banner');
                 if (previewBanner) {
                     previewBanner.textContent = t(`🎉 成功收服「${capturedWord}」！請查看生詞詳解卡（按空白鍵可關閉）`, `🎉 Captured "${capturedWord}"! Review your new Vocab Card!`);
@@ -3854,7 +3854,7 @@ function navigateVocabCard(dir) {
     window.navigateVocabCard(dir);
 }
 
-function inspectVocab(lessonId, word, mode = false) {
+function inspectVocab(lessonId, word, mode = false, autoSpeak = true) {
     const lesson = LESSONS_DATA.find(l => l.id === lessonId);
     if (!lesson) return;
     const itemIndex = lesson.vocab.findIndex(v => v.word === word);
@@ -3887,7 +3887,7 @@ function inspectVocab(lessonId, word, mode = false) {
     else { charDetailsEl.classList.add('hidden'); }
 
     document.getElementById('vocab-popup').classList.remove('hidden');
-    speakText(item.word.replace('/飯', ''), false);
+    if (autoSpeak) speakText(item.word.replace('/飯', ''), false);
     if (!document.getElementById('dialog-modal').classList.contains('hidden')) renderDialogLine();
     if (!document.getElementById('vocab-book-modal').classList.contains('hidden')) renderVocabBook();
 }
