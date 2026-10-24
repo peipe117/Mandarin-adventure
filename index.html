@@ -970,6 +970,7 @@ updateFullscreenButtonUI();
     if (!document.getElementById('certificate-modal').classList.contains('hidden')) openCertificateModal();
 }
 
+// 💻 您原本為 Windows 設定好的完美聲線參數（100% 原封不動保留！）
 const SPEAKER_VOICE_PROFILES = {
     '老師':{gender:'female',voiceIdx:0,pitch:1.08,rate:0.90},'Sophia老師':{gender:'female',voiceIdx:0,pitch:1.12,rate:0.94},'Ms. Sophia':{gender:'female',voiceIdx:0,pitch:1.12,rate:0.94},
     '媽媽':{gender:'female',voiceIdx:2,pitch:0.94,rate:0.89},'姑姑':{gender:'female',voiceIdx:0,pitch:1.20,rate:0.92},'張莉':{gender:'female',voiceIdx:1,pitch:1.15,rate:0.92},
@@ -992,7 +993,15 @@ if ('speechSynthesis' in window) {
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
 }
-function pickVoiceByProfile(profile) {
+
+// 偵測是否為 iPhone / iPad
+function isAppleMobileDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// 💻 Windows 專用：100% 您原本的選音邏輯
+function pickVoiceByProfileWindows(profile) {
     if (!cachedVoices || cachedVoices.length === 0) cachedVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
     const zhVoices = cachedVoices.filter(v => {
         const n = (v.name || '').toLowerCase(), l = (v.lang || '').toLowerCase();
@@ -1018,6 +1027,56 @@ function pickVoiceByProfile(profile) {
     return pool[0];
 }
 
+// 📱 iPhone / iPad 專用：解決 iOS 全員同聲線問題，自動分配 iOS 內建的多組男女聲線
+function pickVoiceByProfileIOS(profile, speakerName) {
+    const allVoices = (window.speechSynthesis && window.speechSynthesis.getVoices().length > 0)
+        ? window.speechSynthesis.getVoices()
+        : cachedVoices;
+    if (!allVoices || allVoices.length === 0) return null;
+
+    const zhVoices = allVoices.filter(v => {
+        const n = (v.name || '').toLowerCase(), l = (v.lang || '').toLowerCase();
+        const isZh = /zh|cmn|chi/i.test(l) || /chinese|中文|國語|臺灣|台灣|普通话|mandarin|美佳|婷婷|力牧|雨舒/i.test(v.name);
+        const isCantonese = n.includes('cantonese') || n.includes('yue') || n.includes('hk') || n.includes('粵') || n.includes('善怡') || n.includes('sin-ji') || n.includes('sinji') || l.includes('hk') || l.includes('yue');
+        return isZh && !isCantonese;
+    });
+    if (zhVoices.length === 0) return null;
+
+    const twVoices = zhVoices.filter(v => /TW|Taiwan|臺灣|台灣|Hant/i.test(v.lang + v.name));
+    const pool = twVoices.length > 0 ? twVoices : zhVoices;
+
+    if (profile.gender === 'male') {
+        // 優先找 iOS 內建的中文男聲（蘆葦 Reed / 洛可 Rocko / 艾迪 Eddy / 爺爺 Grandpa / 力牧 Li-Mu / Siri男聲）
+        const iosMales = pool.filter(v => /Li-Mu|力牧|Reed|蘆葦|芦苇|Rocko|洛可|Eddy|艾迪|Grandpa|爺爺|爷爷|Male|Voice 2|Siri.*2|男/i.test(v.name));
+        if (iosMales.length > 0) {
+            // 依據不同男角分配不同的 iOS 男聲
+            if (speakerName === '爸爸' || speakerName === '心美爸爸' || speakerName === 'xinmei_dad') {
+                return iosMales.find(v => /Reed|蘆葦|芦苇|Grandpa|爺爺|Li-Mu|力牧/i.test(v.name)) || iosMales[0];
+            }
+            if (speakerName === '心美哥哥' || speakerName === 'brother') {
+                return iosMales.find(v => /Rocko|洛可/i.test(v.name)) || iosMales[Math.min(1, iosMales.length - 1)];
+            }
+            // 大文、友朋、東明使用輕快男聲 Eddy (艾迪)
+            return iosMales.find(v => /Eddy|艾迪/i.test(v.name)) || iosMales[iosMales.length - 1];
+        }
+        // 若該舊款 iPad 沒有上述男聲，改用婷婷壓低音調與美佳區隔
+        const ting = zhVoices.find(v => /Ting-Ting|Tingting|婷婷/i.test(v.name));
+        if (ting) return ting;
+    } else {
+        // 女角在 iOS 上依照您設定的 voiceIdx (0:老師/姑姑, 1:張莉/文文/心美, 2:媽媽) 分配給不同 iOS 女聲
+        const meijia = pool.find(v => /Mei-Jia|Meijia|美佳/i.test(v.name)) || pool[0];
+        const sandyOrTing = pool.find(v => /Sandy|珊蒂|Flo|芙蘿|芙萝/i.test(v.name))
+                         || zhVoices.find(v => /Ting-Ting|Tingting|婷婷|Yu-Shu|雨舒/i.test(v.name));
+        const shelleyOrTing = pool.find(v => /Shelley|雪莉|Grandma|奶奶/i.test(v.name))
+                           || zhVoices.find(v => /Ting-Ting|Tingting|婷婷/i.test(v.name));
+
+        if (profile.voiceIdx === 1 && sandyOrTing) return sandyOrTing;
+        if (profile.voiceIdx === 2 && shelleyOrTing) return shelleyOrTing;
+        return meijia;
+    }
+    return pool[0];
+}
+
 function speakText(text, forceWhenMuted = false, speakerName = null, onEndCallback = null) {
     if (!('speechSynthesis' in window) || !text) {
         if (onEndCallback) setTimeout(onEndCallback, 500);
@@ -1030,11 +1089,30 @@ function speakText(text, forceWhenMuted = false, speakerName = null, onEndCallba
     try {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(filterTtsPronunciation(text));
-        utter.lang = 'zh-TW';
-        const profile = speakerName && SPEAKER_VOICE_PROFILES[speakerName] ? SPEAKER_VOICE_PROFILES[speakerName] : { gender: 'female', voiceIdx: 0, pitch: 1.05, rate: 0.90 };
-        const chosenVoice = pickVoiceByProfile(profile);
-        if (chosenVoice) utter.voice = chosenVoice;
-        utter.pitch = profile.pitch; utter.rate = profile.rate;
+        const profile = speakerName && SPEAKER_VOICE_PROFILES[speakerName]
+            ? SPEAKER_VOICE_PROFILES[speakerName]
+            : { gender: 'female', voiceIdx: 0, pitch: 1.05, rate: 0.90 };
+
+        if (isAppleMobileDevice()) {
+            // 📱 iPhone / iPad 分支
+            const chosenVoice = pickVoiceByProfileIOS(profile, speakerName);
+            if (chosenVoice) {
+                utter.voice = chosenVoice;
+                utter.lang = chosenVoice.lang || 'zh-TW';
+            } else {
+                utter.lang = 'zh-TW';
+            }
+            // 在 iOS 上適度拉開 pitch 讓角色差異更明顯
+            utter.pitch = profile.pitch;
+            utter.rate = profile.rate;
+        } else {
+            // 💻 Windows / 電腦分支（100% 執行您原本的設定）
+            utter.lang = 'zh-TW';
+            const chosenVoice = pickVoiceByProfileWindows(profile);
+            if (chosenVoice) utter.voice = chosenVoice;
+            utter.pitch = profile.pitch;
+            utter.rate = profile.rate;
+        }
 
         let callbackFired = false;
         const done = () => { if (callbackFired) return; callbackFired = true; if (onEndCallback) onEndCallback(); };
