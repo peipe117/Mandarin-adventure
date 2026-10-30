@@ -115,7 +115,18 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
     <div id="hud-stage-mission" class="hidden">
         <span id="ui-mission-prefix"></span><strong id="mission-lesson-title"></strong>
         <span id="mission-read-status"></span><span id="mission-quiz-status"></span>
-        <span id="mission-gem-status"></span><span id="mission-chest-status"></span><span id="mission-write-status"></span>
+       <!-- 📋 畫面左側直立式「本島闖關進度面板」（平板上垂直排列不擁擠，點擊可查看或開啟句型） -->
+<div id="hud-stage-mission" class="fixed left-2 top-16 z-20 ac-panel p-2.5 flex flex-col gap-1.5 pointer-events-auto bg-amber-50/95 text-xs font-bold text-amber-900 shadow-xl w-36 sm:w-40 transition-opacity duration-300">
+    <div class="text-[11px] font-black text-amber-950 border-b border-amber-300 pb-1 flex items-center justify-between">
+        <span id="ui-mission-prefix">🎯 本島任務</span>
+        <strong id="mission-lesson-title" class="text-rose-700 truncate">第一課</strong>
+    </div>
+    <span id="mission-read-status" class="px-2 py-1 rounded-lg bg-sky-100 text-sky-900 text-left truncate">📘 課文 (自由選讀)</span>
+    <span id="mission-quiz-status" class="px-2 py-1 rounded-lg bg-purple-100 text-purple-800 text-left truncate">1️⃣❓ 問題 0/3</span>
+    <span id="mission-gem-status" class="px-2 py-1 rounded-lg bg-amber-100 text-amber-800 text-left truncate">2️⃣🧚 生詞 0/18</span>
+    <span id="mission-chest-status" onclick="openSentencePuzzleModal(currentLesson ? currentLesson.id : gameState.unlockedMaxLesson)" class="px-2 py-1 rounded-lg bg-teal-100 text-teal-900 border border-teal-400 cursor-pointer hover:bg-teal-200 text-left truncate" title="點擊挑戰本課課文句子重組">3️⃣🧩 句型 0/5</span>
+    <span id="mission-write-status" class="px-2 py-1 rounded-lg bg-blue-100 text-blue-800 text-left truncate">4️⃣🖌️ 生字 0/8</span>
+</div>
     </div>
 
     <!-- 右上：下拉式傳送門、圖鑑、證書、全螢幕、設定（補回外層 div 讓按鈕靠右且可點擊下拉） -->
@@ -292,12 +303,14 @@ ruby.char-ruby rt { font-size: 0.68rem; color: #0369a1; font-weight: 700; line-h
             </div>
         </div>
 
-        <div class="mt-2.5 pt-2 border-t border-amber-200">
-            <div id="ui-dlg-vocab-tip" class="text-xs font-bold text-amber-800 mb-1">💡 點擊下方生詞可預覽字卡、部首筆畫與造句（讀完課文先回答夥伴問題，再在島上追捕「🧚 生詞小精靈」）：</div>
-            <div id="dlg-vocab-chips" class="flex flex-wrap gap-1.5 max-h-16 overflow-y-auto"></div>
+<!-- 已隱藏生詞與生字列（保留 ID 避免 JS 報錯，內容收納於右上角 📖 圖鑑中） -->
+        <div class="hidden">
+            <div id="ui-dlg-vocab-tip"></div>
+            <div id="dlg-vocab-chips"></div>
+            <div id="dlg-write-chars-row"></div>
         </div>
-        <div class="mt-2 pt-2 border-t border-amber-200 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex flex-wrap items-center gap-1" id="dlg-write-chars-row"></div>
+        <div class="mt-2.5 pt-2 border-t border-amber-200 flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold text-amber-700">💡 點擊課文畫底線的生詞或右上角「📖 圖鑑」可查看字卡</span>
             <div class="flex items-center gap-2 ml-auto">
                 <span id="dlg-progress-text" class="text-xs font-bold text-amber-700">1 / 5</span>
                 <button onclick="prevDialogLine()" id="btn-prev-line" class="ac-btn bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold px-3 py-2 rounded-xl text-sm">◀ 上一句</button>
@@ -6189,7 +6202,239 @@ const pwaTip = document.getElementById('ui-pwa-tip');
 
     populateTeleportSelect();
 };
+// ============================================================================
+// 🌟 自由選讀課文模式 ＋ 左側直立進度面板 ＋ 拍照隱藏補丁
+// ============================================================================
 
+// 1. 登島時不再彈出「強制先找主角讀課文」的阻擋視窗
+showStageEntryGuideModal = function(lessonId) {
+    // 改為自由選讀，不阻擋玩家直接找夥伴答題
+};
+
+// 2. 所有 3D 標籤（包含夥伴頭上的 ❓ 與 🧩 句型寶箱）一登島直接顯示，不需先讀完課文
+updateFloatingLabels = function() {
+    const curSpace = gameState.isInsideCabin ? 'indoor' : 'outdoor';
+    floatingLabels.forEach(item => {
+        if (item.space !== curSpace) { item.el.style.display = 'none'; return; }
+        const dist = item.pos.distanceTo(playerMesh.position);
+        if (dist > 52) { item.el.style.display = 'none'; return; }
+        const projected = item.pos.clone().project(camera);
+        if (projected.z > 1) { item.el.style.display = 'none'; return; }
+        const x = (projected.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-(projected.y * 0.5) + 0.5) * window.innerHeight;
+        item.el.style.display = 'block'; item.el.style.left = `${x}px`; item.el.style.top = `${y}px`;
+    });
+};
+
+// 3. 允許玩家直接點擊或走近夥伴回答問題（移除需先讀完課文的限制）
+openSingleNpcQuestion = function(lessonId, qIdx, markerRef = null) {
+    const lesson = LESSONS_DATA.find(l => l.id === lessonId);
+    if (!lesson) return;
+    quizLesson = lesson; quizIndex = qIdx; activeQuizMarkerRef = markerRef;
+    document.getElementById('quiz-modal').classList.remove('hidden');
+    renderQuizQuestion();
+};
+
+// 4. 課文對話視窗：語音跟讀改為「自由加分練習」，下一句按鈕永遠開放可點！
+renderDialogLine = function() {
+    _baseRenderDialogLine();
+    if (!currentLesson) return;
+    const lineKey = `${currentLesson.id}:${currentDialogIdx}`;
+    const savedStars = gameState.shadowStarsByLine[lineKey] || 0;
+    const nextBtn = document.getElementById('btn-next-line');
+    const scoreBadge = document.getElementById('dlg-shadow-score-badge');
+
+    nextBtn.className = 'ac-btn bg-emerald-500 hover:bg-emerald-400 text-white font-black px-5 py-2 rounded-xl text-sm';
+    nextBtn.textContent = (currentDialogIdx === currentLesson.dialogues.length - 1)
+        ? t('✨ 完成課文瀏覽 ▶', '✨ Finish Reading ▶', '✨ 完成课文浏览 ▶')
+        : t('下一句 ▶', 'Next ▶', '下一句 ▶');
+
+    if (scoreBadge) {
+        if (savedStars > 0) {
+            scoreBadge.textContent = t(`本句最高紀錄：${savedStars} 顆星`, `Best: ${savedStars} Stars`, `本句最高纪录：${savedStars} 颗星`);
+            scoreBadge.className = 'text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-400';
+        } else {
+            scoreBadge.textContent = t('🎙️ 自由跟讀加分練習 (選做)', '🎙️ Optional Bonus Reading', '🎙️ 自由跟读加分练习 (选做)');
+            scoreBadge.className = 'text-xs font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300';
+        }
+    }
+};
+
+nextDialogLine = function() {
+    if (!currentLesson) return;
+    if (currentDialogIdx < currentLesson.dialogues.length - 1) {
+        currentDialogIdx++;
+        renderDialogLine();
+        speakCurrentDialogLine();
+    } else {
+        const lid = currentLesson.id;
+        closeDialogModal();
+        gameState.readLessons.add(lid);
+        updateMissionBanner(lid);
+        checkAndUnlockLessonGate(lid);
+        saveGameProgress();
+        if (gameState.completedQuizzes.has(lid)) spawnWanderingSpiritsForLesson(lid);
+        playACSound('gem');
+        showToast(t('✨ 課文讀完囉！可以隨時找島上頭頂有「❓」的夥伴回答問題或點「🧩句型寶箱」！', '✨ Finished reading! Feel free to answer partner quizzes ("❓") or open the Sentence Box ("🧩")!'));
+    }
+};
+
+// 5. 過關條件檢查：移除讀課文的硬性要求（只要完成 1.問題、2.小精靈、3.句型寶箱、4.生字 即可過關！）
+checkAndUnlockLessonGate = function(lessonId) {
+    const lesson = LESSONS_DATA.find(l => l.id === lessonId);
+    if (!lesson) return;
+    const quizDone = gameState.completedQuizzes.has(lesson.id);
+    const vocabDone = lesson.vocab.every(v => gameState.collectedVocab.has(`${lesson.id}:${v.word}`));
+    const puzzleDone = getLessonPuzzleStats(lesson.id).allSolved;
+    const chars = Array.from(lesson.writeChars);
+    const writtenDone = chars.every(ch => gameState.writtenChars.has(`${lesson.id}:${ch}`));
+
+    updateMissionBanner(lessonId);
+    updateGateUnlockVisuals();
+    saveGameProgress();
+
+    if (quizDone && vocabDone && puzzleDone && writtenDone && !gameState.completedLessons.has(lesson.id)) {
+        const rewardOutfit = SHOP_OUTFITS.find(o => o.reqLesson === lesson.id);
+        if (rewardOutfit) gameState.ownedOutfits.add(rewardOutfit.id);
+
+        if (lesson.id === 12) {
+            if (!finalPartyModalShown) {
+                finalPartyModalShown = true;
+                playACSound('fanfare');
+                addExpAndPoints(50, 50);
+                document.getElementById('finale-party-banner').classList.remove('hidden');
+            }
+        } else {
+            gameState.completedLessons.add(lesson.id);
+            if (lesson.id >= gameState.unlockedMaxLesson && lesson.id < 12) gameState.unlockedMaxLesson = lesson.id + 1;
+            playACSound('fanfare');
+            addExpAndPoints(50, 50);
+            updateGateUnlockVisuals();
+            populateTeleportSelect();
+            saveGameProgress();
+            showNewOutfitUnlockModal(lesson.id);
+        }
+    }
+};
+
+// 6. 更新左側直立式任務面板狀態
+updateMissionBanner = function(targetLessonId) {
+    const lid = targetLessonId || Math.min(12, gameState.unlockedMaxLesson);
+    const lesson = LESSONS_DATA.find(l => l.id === lid) || LESSONS_DATA[0];
+    const st = getLessonShadowStats(lesson.id);
+    const hasRead = gameState.readLessons.has(lesson.id) || st.passedLines > 0;
+    const qAnsweredCount = [0, 1, 2].filter(i => gameState.answeredQuizItems.has(`${lesson.id}:${i}`)).length;
+    const gemCount = lesson.vocab.filter(v => gameState.collectedVocab.has(`${lesson.id}:${v.word}`)).length;
+    const pSt = getLessonPuzzleStats(lesson.id);
+    const chars = Array.from(lesson.writeChars);
+    const doneCount = chars.filter(ch => gameState.writtenChars.has(`${lesson.id}:${ch}`)).length;
+
+    const isTask1Active = (qAnsweredCount < 3);
+    const isTask2Active = (qAnsweredCount === 3) && (gemCount < lesson.vocab.length);
+    const isTask4Active = (qAnsweredCount === 3) && (gemCount === lesson.vocab.length) && (doneCount < chars.length);
+
+    const prefixEl = document.getElementById('ui-mission-prefix');
+    if (prefixEl) prefixEl.textContent = t('🎯 本島任務', '🎯 Tasks', '🎯 本岛任务');
+
+    const titleEl = document.getElementById('mission-lesson-title');
+    if (titleEl) titleEl.textContent = gameState.uiLang === 'en' ? `L${lesson.id}` : tc(lesson.title.split(' ')[0]);
+
+    const rEl = document.getElementById('mission-read-status');
+    if (rEl) {
+        rEl.textContent = `📘 ${t('課文', 'Read', '课文')} (${t('自由選讀', 'Optional', '自由选读')})${hasRead ? '✓' : ''}`;
+        rEl.className = `px-2 py-1 rounded-lg text-left truncate cursor-pointer ${hasRead ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-900 hover:bg-sky-200'}`;
+        rEl.onclick = () => openLessonDialog(lesson.id);
+    }
+
+    const qEl = document.getElementById('mission-quiz-status');
+    if (qEl) {
+        qEl.textContent = `1️⃣❓ ${t('問題', 'Quiz', '问题')} ${qAnsweredCount}/3${qAnsweredCount === 3 ? '✓' : ''}`;
+        qEl.className = `px-2 py-1 rounded-lg text-left truncate ${qAnsweredCount === 3 ? 'bg-emerald-100 text-emerald-800' : (isTask1Active ? 'bg-purple-200 text-purple-950 ring-2 ring-purple-500 animate-pulse' : 'bg-purple-100 text-purple-800')}`;
+    }
+
+    const gEl = document.getElementById('mission-gem-status');
+    if (gEl) {
+        gEl.textContent = `2️⃣🧚 ${t('生詞', 'Vocab', '生词')} ${gemCount}/${lesson.vocab.length}${gemCount === lesson.vocab.length ? '✓' : ''}`;
+        gEl.className = `px-2 py-1 rounded-lg text-left truncate ${gemCount === lesson.vocab.length ? 'bg-emerald-100 text-emerald-800' : (isTask2Active ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-600 animate-pulse' : 'bg-amber-100 text-amber-800')}`;
+    }
+
+    const cEl = document.getElementById('mission-chest-status');
+    if (cEl) {
+        cEl.textContent = `3️⃣🧩 ${t('句型', 'Puzzle', '句型')} ${pSt.solvedCount}/${pSt.totalCount}${pSt.allSolved ? '✓' : ''}`;
+        cEl.className = `px-2 py-1 rounded-lg text-left truncate cursor-pointer ${pSt.allSolved ? 'bg-emerald-100 text-emerald-800' : 'bg-teal-100 text-teal-900 border border-teal-400 hover:bg-teal-200'}`;
+    }
+
+    const wEl = document.getElementById('mission-write-status');
+    if (wEl) {
+        wEl.textContent = `4️⃣🖌️ ${t('生字', 'Chars', '生字')} ${doneCount}/${chars.length}${doneCount === chars.length ? '✓' : ''}`;
+        wEl.className = `px-2 py-1 rounded-lg text-left truncate ${doneCount === chars.length ? 'bg-emerald-100 text-emerald-800' : (isTask4Active ? 'bg-blue-200 text-blue-950 ring-2 ring-blue-600 animate-pulse' : 'bg-blue-100 text-blue-800')}`;
+    }
+
+    document.getElementById('hud-keys').textContent = `${gameState.unlockedMaxLesson}/12 ${t('島', 'Isl', '岛')}`;
+};
+
+// 7. 讓玩家走近夥伴時，不需先讀過課文也能直接觸發問題互動
+const _origCheckProximity = checkProximityInteractions;
+checkProximityInteractions = function() {
+    if (!gameState.isInsideCabin) {
+        let nearestQuizRole = null, minQuizDist = 2.5;
+        quizRoleMarkers.forEach(qm => {
+            const d = Math.hypot(playerMesh.position.x - qm.worldPos.x, playerMesh.position.z - qm.worldPos.z);
+            if (d < minQuizDist) { minQuizDist = d; nearestQuizRole = qm; }
+        });
+        if (nearestQuizRole) {
+            const promptEl = document.getElementById('interaction-prompt');
+            const iconEl = document.getElementById('interaction-icon');
+            const textEl = document.getElementById('interaction-text');
+            const unansweredIdx = nearestQuizRole.qIndices.find(idx => !gameState.answeredQuizItems.has(`${nearestQuizRole.lessonId}:${idx}`));
+            const targetQIdx = unansweredIdx !== undefined ? unansweredIdx : nearestQuizRole.qIndices[0];
+            const allDoneForRole = (unansweredIdx === undefined);
+            const qKey = `${nearestQuizRole.lessonId}:${targetQIdx}`;
+            currentInteractionAction = { type: 'quiz_npc', lessonId: nearestQuizRole.lessonId, qIndex: targetQIdx, markerRef: nearestQuizRole };
+            iconEl.textContent = allDoneForRole ? '✅' : '❓';
+            textEl.textContent = allDoneForRole
+                ? t(`${nearestQuizRole.npcName} 的問題已全數答完 (點此重溫)`, `${nearestQuizRole.npcName}'s Quiz Completed (Review)`)
+                : t(`回答 ${nearestQuizRole.npcName} 的問題 (第 ${targetQIdx + 1}/3 題)`, `Answer ${nearestQuizRole.npcName}'s Question (${targetQIdx + 1}/3)`);
+            promptEl.classList.remove('hidden');
+
+            if (!allDoneForRole && !isAnyModalOpen() && lastAutoQuizKey !== qKey) {
+                lastAutoQuizKey = qKey; mouseWalkTarget = null;
+                openSingleNpcQuestion(nearestQuizRole.lessonId, targetQIdx, nearestQuizRole);
+            }
+            return;
+        }
+    }
+    _origCheckProximity();
+};
+
+// 8. 鳥居進度檢查視窗：將讀課文標示為「自由選讀」
+const _origShowMissingModal2 = showMissingConditionsModal;
+showMissingConditionsModal = function(lessonId, fromWritingComplete = false) {
+    _origShowMissingModal2(lessonId, fromWritingComplete);
+    const lesson = LESSONS_DATA.find(l => l.id === lessonId);
+    if (!lesson) return;
+    const listEl = document.getElementById('mc-modal-list');
+    if (listEl && listEl.firstElementChild) {
+        const hasRead = gameState.readLessons.has(lesson.id);
+        listEl.firstElementChild.className = 'flex items-center justify-between p-2.5 rounded-xl border bg-sky-50 border-sky-300 text-sky-900 cursor-pointer';
+        listEl.firstElementChild.onclick = () => { document.getElementById('missing-conditions-modal').classList.add('hidden'); openLessonDialog(lesson.id); };
+        listEl.firstElementChild.innerHTML = `
+            <span>📘 ${t(`找「${lesson.npcName}」讀課文 (點此打開)`, `Read with ${lesson.npcName} (Click)`)}</span>
+            <span>${hasRead ? '✅ ' + t('已讀過', 'Read') : '💡 ' + t('自由選讀', 'Optional')}</span>
+        `;
+    }
+};
+
+// 9. 拍照模式同步隱藏左側直立式進度面板
+const _origTriggerPhoto = window.triggerPhotoMode;
+window.triggerPhotoMode = function() {
+    const leftMission = document.getElementById('hud-stage-mission');
+    if (leftMission) leftMission.style.opacity = '0';
+    _origTriggerPhoto();
+    setTimeout(() => {
+        if (leftMission) leftMission.style.opacity = '1';
+    }, 4200);
+};
 window.onload = function() {
     try {
         const hasSave = loadGameProgress();
